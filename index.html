@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>THE EMBER — Where Every Meal Becomes a Memory</title>
+<meta name="description" content="THE EMBER — a premium restaurant experience. Frontend demonstration website.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23171311'/%3E%3Cpath d='M32 10c3 9 14 14 14 28a14 14 0 0 1-28 0c0-8 5-11 7-17 3 3 4 6 4 9 4-5 5-12 3-20z' fill='%23C76A3A'/%3E%3Cpath d='M32 34c2 4 7 6 7 12a7 7 0 0 1-14 0c0-4 4-6 7-12z' fill='%23D6A45D'/%3E%3C/svg%3E">
+<script>
+/* Apply saved theme/language BEFORE first paint (prevents flicker) */
+(function(){try{var t=localStorage.getItem('ember_theme');if(!t){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}
+document.documentElement.setAttribute('data-theme',t);document.documentElement.lang=localStorage.getItem('ember_lang')||'en'}catch(e){}})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Hind+Siliguri:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ THEME TOKENS ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+:root{--ease:cubic-bezier(.2,.7,.2,1);--hf:'Playfair Display','Hind Siliguri',serif;--bf:'DM Sans','Hind Siliguri',system-ui,sans-serif}
+html[lang=bn]{--hf:'Hind Siliguri','Playfair Display',serif;--bf:'Hind Siliguri','DM Sans',system-ui,sans-serif}
+[data-theme=dark]{--bg:#171311;--bg2:#28201C;--card:#211A16;--tx:#F7F1E8;--mu:#A9A09A;--ac:#C76A3A;--ac2:#D6A45D;--ln:rgba(214,164,93,.2);--sh:0 22px 50px rgba(0,0,0,.45);--hdr:rgba(23,19,17,.84);--onh:#171311;--ok:#7fb98a;--bad:#e5806b}
+[data-theme=light]{--bg:#F7F1E8;--bg2:#EDE3D3;--card:#FFFBF4;--tx:#241C17;--mu:#6B5F57;--ac:#B2531F;--ac2:#8F6420;--ln:rgba(40,32,28,.16);--sh:0 18px 40px rgba(70,45,25,.15);--hdr:rgba(247,241,232,.88);--onh:#fff;--ok:#2f7a45;--bad:#b3392a}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--tx);font-family:var(--bf);line-height:1.65;transition:background .5s,color .5s;overflow-x:hidden}
+body.lock{overflow:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3,h4{font-family:var(--hf);font-weight:600;line-height:1.2}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ac2);outline-offset:3px}
+.skip{position:absolute;left:-999px}.skip:focus{left:10px;top:10px;z-index:999;background:var(--ac);color:#fff;padding:8px 14px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.mu{color:var(--mu)}
+/* ============ HEADER ============ */
+.hd{position:sticky;top:0;z-index:50;background:var(--hdr);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--ln);transition:background .5s}
+.hd-in{display:flex;align-items:center;gap:18px;height:74px}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+.logo svg{width:30px;height:30px;flex:none}
+.logo b{display:block;font-family:'Playfair Display',serif;font-size:1.28rem;letter-spacing:.3em;font-weight:600;line-height:1.1}
+.logo small{display:block;font-size:.66rem;letter-spacing:.22em;color:var(--ac2);margin-top:2px}
+.nav{display:flex;gap:28px;margin-left:auto}
+.nav a{text-decoration:none;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;position:relative;padding:6px 0}
+.nav a:after{content:'';position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--ac2);transition:width .35s var(--ease)}
+.nav a:hover:after,.nav a.on:after{width:100%}
+.hd-act{display:flex;align-items:center;gap:8px}
+.ib{position:relative;width:42px;height:42px;display:grid;place-items:center;background:transparent;border:1px solid var(--ln);border-radius:50%;cursor:pointer;text-decoration:none;transition:.3s var(--ease)}
+.ib:hover{border-color:var(--ac2);background:var(--bg2);transform:translateY(-1px)}
+.ib svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.cnt{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;border-radius:10px;background:var(--ac);color:#fff;font-size:.68rem;font-weight:700;display:grid;place-items:center;padding:0 5px}
+.cnt.bump{animation:bump .5s var(--ease)}
+@keyframes bump{40%{transform:scale(1.5)}}
+.lang{display:flex;border:1px solid var(--ln);border-radius:20px;overflow:hidden}
+.lang button{background:none;border:0;padding:8px 12px;font-size:.78rem;font-weight:600;cursor:pointer;transition:.3s}
+.lang button.on{background:var(--ac);color:#fff}
+.burger{display:none}
+.theme-ic .sun{display:none}[data-theme=light] .theme-ic .sun{display:block}[data-theme=light] .theme-ic .moon{display:none}
+/* ============ BUTTONS / FORM ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 26px;border:1px solid transparent;font:600 .8rem var(--bf);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:.35s var(--ease);border-radius:2px;position:relative;overflow:hidden}
+.btn-p{background:var(--ac);color:#fff}
+.btn-p:hover{background:var(--ac2);color:var(--onh);transform:translateY(-2px);box-shadow:0 12px 26px rgba(199,106,58,.28)}
+.btn-o{border-color:var(--ac2);background:transparent}
+.btn-o:hover{background:var(--ac2);color:var(--onh);transform:translateY(-2px)}
+.btn.sm{padding:9px 16px;font-size:.72rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn.pulse{animation:pulse .6s}
+@keyframes pulse{50%{transform:scale(.94)}}
+.btn.hero-o{color:#F7F1E8;border-color:#D6A45D}
+.link{background:none;border:0;color:var(--ac2);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:.88rem}
+.f{margin-bottom:16px}.f label{display:block;font-size:.8rem;letter-spacing:.06em;margin-bottom:6px;color:var(--mu)}
+.f input,.f select,.f textarea{width:100%;background:var(--card);border:1px solid var(--ln);padding:12px 14px;border-radius:2px;transition:.3s}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--ac2);outline:none;box-shadow:0 0 0 3px rgba(214,164,93,.18)}
+.f.bad input,.f.bad select,.f.bad textarea{border-color:var(--bad)}
+.f .err{color:var(--bad);font-size:.78rem;margin-top:4px;min-height:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* ============ SECTIONS ============ */
+.sec{padding:96px 0}.sec.alt{background:var(--bg2);transition:background .5s}
+.sec-h{max-width:640px;margin-bottom:48px}
+.sec-h.c{margin-inline:auto;text-align:center}
+.eyebrow{font-size:.74rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ac2);margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.sec-h.c .eyebrow{justify-content:center}
+.eyebrow:before{content:'';width:34px;height:1px;background:var(--ac2)}
+.sec-h h2{font-size:clamp(1.9rem,3.6vw,2.9rem)}
+.sec-h p{margin-top:14px;color:var(--mu)}
+.grid{display:grid;gap:26px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.sec-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:40px}.sec-top .sec-h{margin:0}
+/* ============ HERO ============ */
+.hero{position:relative;min-height:calc(100vh - 74px);display:flex;align-items:center;color:#F7F1E8;background:#171311 center/cover no-repeat;overflow:hidden}
+.hero:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(23,19,17,.94) 0%,rgba(23,19,17,.7) 50%,rgba(23,19,17,.35) 100%),linear-gradient(0deg,rgba(23,19,17,.8),transparent 40%)}
+.hero .wrap{position:relative;padding-top:60px;padding-bottom:80px}
+.hero .tag{font-size:.78rem;letter-spacing:.34em;text-transform:uppercase;color:#D6A45D;margin-bottom:22px;opacity:0;animation:fadeUp 1s .1s var(--ease) forwards}
+.hero h1{font-size:clamp(2.6rem,6.4vw,5.4rem);max-width:820px;margin-bottom:24px}
+.hero h1 .ln{display:block;overflow:hidden}.hero h1 .ln span{display:block;transform:translateY(110%);animation:rise 1.1s var(--ease) forwards}
+.hero h1 .ln:nth-child(2) span{animation-delay:.18s}
+.hero h1 em{color:#D6A45D;font-style:italic}
+.hero p.lead{max-width:540px;color:#d8cfc5;font-size:1.08rem;margin-bottom:36px;opacity:0;animation:fadeUp 1s .5s var(--ease) forwards}
+.hero .cta{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fadeUp 1s .7s var(--ease) forwards}
+.hero .scroll{position:absolute;bottom:26px;left:50%;width:1px;height:50px;background:linear-gradient(#D6A45D,transparent);animation:drip 2s infinite}
+@keyframes rise{to{transform:none}}@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}@keyframes drip{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.page-in{animation:pageIn .6s var(--ease)}@keyframes pageIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:var(--d,0s)}.rv.in{opacity:1;transform:none}
+/* ============ FOOD CARDS ============ */
+.fc{background:var(--card);border:1px solid var(--ln);display:flex;flex-direction:column;transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .45s}
+.fc:hover{transform:translateY(-6px);box-shadow:var(--sh);border-color:var(--ac2)}
+.fc-img{position:relative;display:block;aspect-ratio:4/3;overflow:hidden;background:var(--bg2)}
+.fc-img img{width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}.fc:hover .fc-img img{transform:scale(1.08)}
+.badges{position:absolute;top:12px;left:12px;display:flex;gap:6px;flex-wrap:wrap}
+.bd{background:rgba(23,19,17,.85);color:#D6A45D;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(214,164,93,.4)}
+.bd.off{background:#7a2e22;color:#fff;border-color:transparent}
+.fc-b{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.fc-cat{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ac2)}
+.fc-b h3{font-size:1.2rem}.fc-b h3 a{text-decoration:none}
+.fc-b p{font-size:.88rem;color:var(--mu);flex:1}
+.fc-f{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.pr{font-family:var(--hf);font-size:1.25rem;color:var(--ac2);font-weight:600}
+.cat-tile{position:relative;aspect-ratio:4/5;overflow:hidden;display:flex;align-items:flex-end;text-decoration:none;color:#F7F1E8}
+.cat-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .9s var(--ease)}
+.cat-tile:hover img{transform:scale(1.1)}
+.cat-tile:before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(23,19,17,.92),transparent 60%)}
+.cat-tile span{position:relative;z-index:2;padding:18px;font-family:var(--hf);font-size:1.15rem}
+/* ============ OFFERS / INFO ============ */
+.offer{border:1px solid var(--ln);padding:34px 28px;background:var(--card);position:relative;overflow:hidden;transition:.4s var(--ease)}
+.offer:hover{border-color:var(--ac2);transform:translateY(-4px)}
+.offer .code{display:inline-block;margin-top:14px;border:1px dashed var(--ac2);padding:5px 12px;letter-spacing:.2em;font-size:.8rem;color:var(--ac2)}
+.offer h3{font-size:1.4rem;margin-bottom:8px}
+.why{padding:30px 24px;border-top:2px solid var(--ac);background:var(--card)}
+.why h3{font-size:1.15rem;margin-bottom:8px}.why p{color:var(--mu);font-size:.92rem}
+.story{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center}
+.story .im{aspect-ratio:4/5;overflow:hidden;position:relative}.story .im img{width:100%;height:100%;object-fit:cover}
+.story .im:after{content:'';position:absolute;inset:16px;border:1px solid var(--ac2);pointer-events:none}
+.story p{color:var(--mu);margin-top:16px}
+.rev{background:var(--card);border:1px solid var(--ln);padding:28px}
+.rev .st{color:var(--ac2);letter-spacing:3px}.rev p{margin:12px 0;font-family:var(--hf);font-size:1.05rem}.rev small{color:var(--mu)}
+.samp{display:inline-block;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--ln);padding:2px 7px;color:var(--mu);margin-left:6px}
+.infoCard{background:var(--card);border:1px solid var(--ln);padding:28px}
+.infoCard h3{font-size:1.2rem;margin-bottom:12px}.infoCard li{list-style:none;padding:6px 0;border-bottom:1px solid var(--ln);display:flex;justify-content:space-between;gap:12px;font-size:.92rem}.infoCard li:last-child{border:0}
+.map{width:100%;height:100%;min-height:320px;border:1px solid var(--ln);filter:grayscale(.4)}
+.news{display:flex;gap:10px;max-width:520px;margin:24px auto 0}.news input{flex:1;background:var(--card);border:1px solid var(--ln);padding:13px 16px}
+/* ============ MENU PAGE ============ */
+.pgh{padding:70px 0 40px;background:var(--bg2);border-bottom:1px solid var(--ln)}.pgh h1{font-size:clamp(2rem,4.5vw,3.4rem)}.pgh p{color:var(--mu);margin-top:10px;max-width:620px}
+.tools{display:flex;gap:14px;flex-wrap:wrap;margin:34px 0 20px}
+.tools input,.tools select{background:var(--card);border:1px solid var(--ln);padding:12px 14px;border-radius:2px}.tools input{flex:1;min-width:220px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:26px;scrollbar-width:thin}
+.tab{flex:none;background:transparent;border:1px solid var(--ln);padding:9px 18px;font-size:.82rem;cursor:pointer;transition:.3s;white-space:nowrap}
+.tab:hover{border-color:var(--ac2)}.tab.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.empty{text-align:center;padding:70px 20px;color:var(--mu)}
+/* ============ DETAIL / OPTIONS ============ */
+.det{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;padding:56px 0 90px}
+.det .im{aspect-ratio:1/1;overflow:hidden;border:1px solid var(--ln);position:sticky;top:100px;align-self:start}.det .im img{width:100%;height:100%;object-fit:cover}
+.crumb{font-size:.8rem;color:var(--mu);margin-bottom:18px}.crumb a{text-decoration:none}.crumb a:hover{color:var(--ac2)}
+.det h1{font-size:clamp(1.9rem,3.4vw,2.8rem);margin:6px 0 4px}.det .bn{color:var(--ac2);margin-bottom:14px}
+.og{margin:22px 0}.og h4{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mu);margin-bottom:10px;font-family:var(--bf);font-weight:600}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip input{position:absolute;opacity:0}
+.chip span{display:inline-block;border:1px solid var(--ln);padding:8px 15px;cursor:pointer;font-size:.88rem;transition:.25s}
+.chip span em{font-style:normal;color:var(--ac2);font-size:.78rem}
+.chip input:checked+span{background:var(--ac);border-color:var(--ac);color:#fff}.chip input:checked+span em{color:#fff}
+.chip input:focus-visible+span{outline:2px solid var(--ac2);outline-offset:2px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--ln)}.qty button{width:38px;height:38px;background:none;border:0;cursor:pointer;font-size:1.1rem;transition:.2s}.qty button:hover{background:var(--bg2)}.qty b{min-width:36px;text-align:center}
+.buyrow{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:26px;padding-top:22px;border-top:1px solid var(--ln)}
+textarea.note{width:100%;background:var(--card);border:1px solid var(--ln);padding:11px 13px;min-height:70px;resize:vertical}
+/* ============ DRAWER / MODAL / TOAST ============ */
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .4s;z-index:90}
+body.drawer-open #scrim,body.modal-open #scrim{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,100%);background:var(--bg);z-index:100;transform:translateX(105%);transition:transform .5s var(--ease);display:flex;flex-direction:column;border-left:1px solid var(--ln);box-shadow:var(--sh)}
+body.drawer-open #drawer{transform:none}
+.dr-h{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--ln)}.dr-h h3{font-size:1.3rem}
+.dr-b{flex:1;overflow:auto;padding:8px 24px}.dr-f{padding:20px 24px;border-top:1px solid var(--ln);background:var(--bg2)}
+.line{display:grid;grid-template-columns:70px 1fr auto;gap:14px;padding:16px 0;border-bottom:1px solid var(--ln);align-items:start}
+.line img{width:70px;height:70px;object-fit:cover}.line h4{font-size:1rem}.line small{display:block;color:var(--mu);font-size:.76rem;line-height:1.4;margin:2px 0 6px}
+.line .qty button{width:30px;height:30px}.line .qty b{min-width:28px;font-size:.88rem}
+.tot{display:flex;justify-content:space-between;padding:4px 0;font-size:.92rem}.tot.g{font-family:var(--hf);font-size:1.3rem;border-top:1px solid var(--ln);margin-top:8px;padding-top:12px;color:var(--ac2)}
+.coupon{display:flex;gap:8px;margin:14px 0}.coupon input{flex:1;background:var(--card);border:1px solid var(--ln);padding:10px 12px;text-transform:uppercase}
+.modal{position:fixed;inset:0;z-index:110;display:grid;place-items:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .35s}
+body.modal-open .modal{opacity:1;pointer-events:auto}
+.mbox{background:var(--bg);border:1px solid var(--ln);width:min(560px,100%);max-height:92vh;overflow:auto;padding:30px;transform:translateY(24px) scale(.97);transition:transform .45s var(--ease);box-shadow:var(--sh)}
+body.modal-open .mbox{transform:none}.mbox.wide{width:min(760px,100%)}
+.mbox h3{font-size:1.5rem;margin-bottom:16px}
+.mx{float:right}
+#toasts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,440px)}
+.toast{background:var(--tx);color:var(--bg);padding:12px 18px;font-size:.88rem;box-shadow:var(--sh);animation:toastIn .45s var(--ease);display:flex;gap:14px;align-items:center;justify-content:space-between;width:100%}
+.toast.out{opacity:0;transform:translateY(10px);transition:.4s}.toast button{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font-weight:700}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}}
+/* ============ CHECKOUT / CONFIRM / TRACK ============ */
+.demo{background:rgba(214,164,93,.12);border:1px solid var(--ln);padding:11px 16px;font-size:.84rem;margin:0 0 24px;color:var(--tx)}
+.steps{display:flex;gap:10px;margin-bottom:28px;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase}.steps span{padding-bottom:8px;border-bottom:2px solid var(--ln);flex:1;color:var(--mu)}.steps span.on{border-color:var(--ac);color:var(--tx)}
+.co{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;padding:50px 0 90px;align-items:start}
+.box{background:var(--card);border:1px solid var(--ln);padding:26px;margin-bottom:22px}.box h3{font-size:1.25rem;margin-bottom:16px}
+.opt{display:flex;align-items:center;gap:12px;border:1px solid var(--ln);padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.25s}.opt:hover{border-color:var(--ac2)}.opt.on{border-color:var(--ac);background:rgba(199,106,58,.1)}.opt input{accent-color:var(--ac)}.opt small{display:block;color:var(--mu)}
+.sticky{position:sticky;top:96px}
+.ok-wrap{max-width:760px;margin:0 auto;padding:60px 0 90px;text-align:center}
+.check{width:96px;height:96px;margin:0 auto 24px}.check circle{fill:none;stroke:var(--ac2);stroke-width:3;stroke-dasharray:290;stroke-dashoffset:290;animation:draw 1s .1s var(--ease) forwards}.check path{fill:none;stroke:var(--ac2);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:draw .6s .9s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.ref{display:inline-block;border:1px dashed var(--ac2);padding:8px 20px;letter-spacing:.2em;color:var(--ac2);margin:12px 0 26px;font-weight:700}
+.ok-wrap .box{text-align:left}
+.trk{display:grid;gap:0;margin:26px 0}.trk div{display:flex;gap:16px;padding:0 0 26px 0;position:relative;color:var(--mu)}
+.trk div:before{content:'';width:14px;height:14px;border-radius:50%;border:2px solid var(--ln);flex:none;margin-top:5px;background:var(--bg);z-index:1;transition:.5s}
+.trk div:after{content:'';position:absolute;left:6px;top:20px;bottom:-5px;width:2px;background:var(--ln)}.trk div:last-child:after{display:none}
+.trk div.done{color:var(--tx)}.trk div.done:before{background:var(--ac);border-color:var(--ac)}.trk div.done:after{background:var(--ac)}.trk div.cur:before{box-shadow:0 0 0 6px rgba(199,106,58,.25);animation:glow 1.6s infinite}
+@keyframes glow{50%{box-shadow:0 0 0 10px rgba(199,106,58,.05)}}
+.auth{max-width:460px;margin:60px auto 90px}.auth h1{font-size:2rem;margin-bottom:6px}
+.ptabs{display:flex;gap:8px;margin:28px 0;flex-wrap:wrap}
+.faq details{border-bottom:1px solid var(--ln);padding:18px 0}.faq summary{cursor:pointer;font-family:var(--hf);font-size:1.12rem;list-style:none;display:flex;justify-content:space-between;gap:16px}
+.faq summary:after{content:'+';color:var(--ac2);font-size:1.4rem;line-height:1;transition:.3s}.faq details[open] summary:after{transform:rotate(45deg)}.faq details p{margin-top:10px;color:var(--mu)}
+.prose{max-width:780px;padding:56px 0 90px}.prose h2{font-size:1.4rem;margin:30px 0 8px}.prose p{color:var(--mu);margin-bottom:12px}
+/* ============ FOOTER ============ */
+.ft{background:var(--bg2);border-top:1px solid var(--ln);padding:70px 0 26px;margin-top:0;transition:background .5s}
+.ft-g{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.2fr;gap:40px}
+.ft h4{font-family:var(--bf);font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ac2);margin-bottom:16px}
+.ft li{list-style:none;margin-bottom:9px;font-size:.9rem}.ft a{text-decoration:none;color:var(--mu)}.ft a:hover{color:var(--ac2)}
+.ft p{color:var(--mu);font-size:.9rem;margin-top:12px}
+.ft-b{border-top:1px solid var(--ln);margin-top:46px;padding-top:20px;font-size:.78rem;color:var(--mu);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+/* ============ ADMIN ============ */
+body.is-admin .hd,body.is-admin .ft{display:none}
+.adm{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.adm-s{background:var(--bg2);border-right:1px solid var(--ln);padding:24px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+.adm-s .logo{margin:0 8px 26px}.adm-s a.it{display:block;padding:11px 14px;text-decoration:none;font-size:.9rem;border-left:2px solid transparent;color:var(--mu)}.adm-s a.it:hover{color:var(--tx)}.adm-s a.it.on{border-color:var(--ac);color:var(--tx);background:var(--card)}
+.adm-m{padding:30px 34px 70px;min-width:0}
+.adm-m h1{font-size:1.9rem;margin-bottom:6px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}.stat{background:var(--card);border:1px solid var(--ln);padding:20px}.stat small{color:var(--mu);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase}.stat b{display:block;font-family:var(--hf);font-size:1.8rem;color:var(--ac2);margin-top:4px}
+.tw{overflow-x:auto;border:1px solid var(--ln);background:var(--card);margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:.88rem}th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--ln);white-space:nowrap}th{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}tr:last-child td{border:0}
+td img{width:42px;height:42px;object-fit:cover;display:inline-block;vertical-align:middle;margin-right:10px}
+td input[type=number]{width:90px;background:var(--bg);border:1px solid var(--ln);padding:6px 8px}
+.pill{display:inline-block;padding:3px 10px;border:1px solid var(--ln);font-size:.74rem}.pill.ok{color:var(--ok);border-color:var(--ok)}.pill.no{color:var(--bad);border-color:var(--bad)}
+.sampleTag{display:inline-block;background:rgba(214,164,93,.15);border:1px solid var(--ln);color:var(--ac2);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;vertical-align:middle;margin-left:8px}
+.bars{display:flex;align-items:flex-end;gap:14px;height:200px;padding:20px;background:var(--card);border:1px solid var(--ln)}.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:.7rem;color:var(--mu);gap:6px}.bars i{display:block;width:100%;background:linear-gradient(var(--ac2),var(--ac));min-height:4px;transition:height 1s var(--ease)}
+.adm-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px 0}.adm-bar input,.adm-bar select{background:var(--card);border:1px solid var(--ln);padding:10px 12px}
+/* ============ RESPONSIVE ============ */
+@media(max-width:1080px){.g4{grid-template-columns:repeat(2,1fr)}.ft-g{grid-template-columns:1fr 1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){
+ .nav{position:absolute;top:74px;left:0;right:0;background:var(--bg);flex-direction:column;gap:0;padding:8px 24px 18px;border-bottom:1px solid var(--ln);margin:0;display:none}
+ .hd.open .nav{display:flex}.nav a{padding:14px 0;border-bottom:1px solid var(--ln)}
+ .burger{display:grid}.hd-in{gap:10px}.hd-act{margin-left:auto}
+ .story,.det,.co{grid-template-columns:1fr;gap:34px}.det .im,.sticky{position:static}.g3{grid-template-columns:1fr 1fr}
+ .adm{grid-template-columns:1fr}.adm-s{position:static;height:auto;display:flex;overflow-x:auto;padding:12px}.adm-s .logo{display:none}.adm-s a.it{white-space:nowrap;border-left:0;border-bottom:2px solid transparent}.adm-s a.it.on{border-bottom-color:var(--ac)}.adm-m{padding:22px 16px 60px}
+}
+@media(max-width:600px){.g4,.g3,.g2,.row2,.ft-g{grid-template-columns:1fr}.sec{padding:64px 0}.wrap{padding:0 18px}.logo small{display:none}.logo b{font-size:1.05rem;letter-spacing:.2em}.lang button{padding:7px 9px}.ib{width:38px;height:38px}.stats{grid-template-columns:1fr 1fr}.news{flex-direction:column}.mbox{padding:22px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}.hero h1 .ln span{transform:none}.hero .tag,.hero p.lead,.hero .cta{opacity:1}}
+</style>
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+<div id="hdr"></div>
+<main id="app" tabindex="-1"></main>
+<div id="ftr"></div>
+<div id="scrim" data-act="closeAll"></div>
+<aside id="drawer" aria-label="Cart"></aside>
+<div id="modal" class="modal" role="dialog" aria-modal="true"></div>
+<div id="toasts" aria-live="polite"></div>
+<noscript><p style="padding:40px;text-align:center">THE EMBER needs JavaScript enabled.</p></noscript>
+
+<script>
+'use strict';
+/* =====================================================================
+   THE EMBER — single-file frontend demo.  No backend. All data lives in
+   this file (menu, translations) and in the browser's localStorage.
+   ===================================================================== */
+
+/* ---------- 1. EASY-EDIT CONFIG (restaurant details, delivery, coupons) ---------- */
+const DEF_SET={
+  name:'THE EMBER', nameBn:'দ্য এমবার',
+  address:'Station Road, Sunamganj Sadar, Sunamganj, Bangladesh',      // sample address — edit me
+  addressBn:'স্টেশন রোড, সুনামগঞ্জ সদর, সুনামগঞ্জ, বাংলাদেশ',
+  phone:'+880 1XXX-XXXXXX', email:'hello@example.com',                // placeholders — edit me
+  hours:[['Sat – Thu','শনি – বৃহস্পতি','11:00 – 23:00'],['Friday','শুক্রবার','13:00 – 23:30']],
+  deliveryFee:60, freeAbove:1500,                                      // BDT
+  social:{facebook:'#',instagram:'#',youtube:'#'},
+  logoUrl:''
+};
+const DEF_COUPONS=[
+  {code:'EMBER10',type:'pct',v:10,min:0,en:'10% off your order',bn:'অর্ডারে ১০% ছাড়'},
+  {code:'WELCOME50',type:'flat',v:50,min:500,en:'৳50 off orders over ৳500',bn:'৫০০ টাকার উপরে অর্ডারে ৫০ টাকা ছাড়'}
+];
+
+/* ---------- 2. IMAGES (Unsplash photo IDs; if one fails the site shows a styled fallback) ---------- */
+/* Photos come from Wikimedia Commons (free licences). To change a photo, replace the file name inside WM('...') with any file name from commons.wikimedia.org,
+   or put any image link / local path (like "images/biryani.jpg") instead of WM(...). If a photo can't load, a styled fallback card is shown. */
+const WM=(f,w=800)=>'https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(f.replace(/ /g,'_'))+'?width='+w;
+const IMG=x=>x||'';
+const PH={
+ bir:WM('Chicken_Dum_Biryani.jpg'), pol:WM('Bangladeshi_Polao.jpg'), kac:WM('Kacchi_Biryani.jpg'),
+ teh:WM('Bangladeshi_style_boiled_rice_with_beef_curry_on_top.jpg'),
+ bur:WM('Beefburger - A114 Whips Cross Road café hut - Waltham Forest London England.jpg'), san:'',
+ piz:WM('Pizza_food.jpg'), pas:WM('Chicken_fettuccine_alfredo.JPG'),
+ chk:WM('Fried-Chicken-Set.jpg'), wng:WM('Coast_Guard_buffalo_chicken_wings.jpg'),
+ tik:WM('Chicken tikka in Araku Valley, Andhra Pradesh 01.jpg'), ski:WM('Shish_Kebab.jpg'),
+ ilh:WM('Ilish_Bhaat.jpg'), bhu:WM('গরুর ঝাল ভুনা.jpg'),
+ noo:WM('Pork chow mein, chow mein noodle - commonwealth 2v23wq68w.jpg'), cur:WM('Thai_green_chicken_curry_and_roti.jpg'),
+ sam:WM('Samosa and Tamoto Chilli Ketchup – Kolkata.jpg'), fry:WM('French_Fries.JPG'),
+ lav:WM('Chocolate_Fondant.jpg'), des:WM('Rasgulla_With_Rabdi.jpg'),
+ cof:WM('Latte_at_Doppio_Ristretto_Chiang_Mai_01.jpg'), cld:WM('Frappé.jpg'), las:'',
+ f4:WM('Kacchi_Biryani_and_Borhani.jpg'), f6:WM('Kacchi_Biryani_with_Jali_Kabab.jpg'),
+ hero:WM('Kacchi_Biryani_with_Jali_Kabab.jpg',1600), inn:WM('A_traditional_Bengali_dish_served_on_a_banana_leaf_surrounded_by_flower_petals.jpg',1000)
+};
+function ph(txt){const s=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#28201C"/><stop offset="1" stop-color="#4a2a1b"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><path d="M400 190c20 55 85 85 85 170a85 85 0 0 1-170 0c0-50 30-68 42-104 18 18 24 36 24 54 24-30 30-72 19-120z" fill="#C76A3A" opacity=".85"/><text x="400" y="500" text-anchor="middle" font-family="Georgia,serif" font-size="34" fill="#D6A45D">${String(txt||'THE EMBER').replace(/[<>&"]/g,'')}</text></svg>`;return 'data:image/svg+xml;utf8,'+encodeURIComponent(s)}
+
+/* ---------- 3. MENU DATA (edit names, prices, images here) ---------- */
+const CATS0=[
+ {id:'biryani',en:'Biryani & Rice',bn:'বিরিয়ানি ও রাইস'},
+ {id:'kacchi',en:'Kacchi & Tehari',bn:'কাচ্চি ও তেহারি'},
+ {id:'burger',en:'Burgers & Sandwiches',bn:'বার্গার ও স্যান্ডউইচ'},
+ {id:'pizza',en:'Pizza & Pasta',bn:'পিজ্জা ও পাস্তা'},
+ {id:'fried',en:'Fried Chicken',bn:'ফ্রাইড চিকেন'},
+ {id:'grill',en:'Grilled & BBQ',bn:'গ্রিল ও বার্বিকিউ'},
+ {id:'trad',en:'Bangladeshi Traditional Food',bn:'বাংলাদেশি ঐতিহ্যবাহী খাবার'},
+ {id:'chinese',en:'Chinese & Thai',bn:'চাইনিজ ও থাই'},
+ {id:'snacks',en:'Snacks & Appetizers',bn:'স্ন্যাক্স ও অ্যাপেটাইজার'},
+ {id:'dessert',en:'Desserts',bn:'ডেজার্ট'},
+ {id:'coffee',en:'Coffee & Beverages',bn:'কফি ও পানীয়'}
+];
+// I(id, category, English name, Bengali name, English desc, Bengali desc, price BDT, image key, tags[feat,best,chef], popularity, available)
+const I=(id,cat,en,bn,de,db,price,img,tags,pop,av=1)=>({id,cat,en,bn,de,db,price,img:IMG(PH[img]),tags,pop,av:!!av});
+const PRODUCTS0=[
+ I('chicken-dum-biryani','biryani','Chicken Dum Biryani','চিকেন দম বিরিয়ানি','Fragrant basmati layered with slow-cooked spiced chicken, sealed and steamed on dum.','সুগন্ধি বাসমতি চাল ও ধীর আঁচে রান্না করা মসলাদার মুরগি, দমে সিদ্ধ।',280,'bir',['feat','best'],95),
+ I('morog-polao','biryani','Morog Polao','মোরগ পোলাও','Silky ghee polao with tender roast chicken, a classic celebration plate.','ঘি-সুবাসিত পোলাওয়ের সাথে নরম রোস্ট মুরগি — উৎসবের ক্লাসিক পদ।',320,'pol',['chef'],70),
+ I('mutton-kacchi','kacchi','Mutton Kacchi Biryani','মাটন কাচ্চি বিরিয়ানি','Marinated mutton and aged rice cooked together in a sealed pot — rich, aromatic, unforgettable.','মেরিনেট করা খাসির মাংস ও পুরনো চাল একসাথে সিল করা হাঁড়িতে রান্না — সুগন্ধি ও সমৃদ্ধ।',420,'kac',['feat','best','chef'],100),
+ I('beef-tehari','kacchi','Beef Tehari','বিফ তেহারি','Mustard-oil tehari with tender beef, green chilli and a squeeze of lemon.','সরিষার তেলে রান্না গরুর মাংসের তেহারি, কাঁচা মরিচ ও লেবুর রসসহ।',260,'teh',['best'],82),
+ I('signature-beef-burger','burger','Signature Beef Burger','সিগনেচার বিফ বার্গার','Juicy grilled beef patty, aged cheddar, caramelised onion and house sauce on a toasted brioche.','রসালো গ্রিলড বিফ প্যাটি, চেডার চিজ, ক্যারামেলাইজড পেঁয়াজ ও হাউস সস — টোস্টেড ব্রিওশে বানে।',390,'bur',['feat','best'],90),
+ I('club-sandwich','burger','Grilled Chicken Club Sandwich','গ্রিলড চিকেন ক্লাব স্যান্ডউইচ','Triple-layer toasted sandwich with grilled chicken, egg, lettuce and tomato.','গ্রিলড চিকেন, ডিম, লেটুস ও টমেটো দিয়ে তিন স্তরের টোস্টেড স্যান্ডউইচ।',320,'san',[],55),
+ I('bbq-chicken-pizza','pizza','Smoked BBQ Chicken Pizza','স্মোকড বার্বিকিউ চিকেন পিজ্জা','Stone-baked crust, smoky BBQ sauce, mozzarella and charred chicken.','স্টোন-বেকড ক্রাস্ট, স্মোকি বিবিকিউ সস, মোজারেলা ও পোড়া স্বাদের চিকেন।',650,'piz',['feat','chef'],78),
+ I('chicken-alfredo','pizza','Creamy Chicken Alfredo Pasta','ক্রিমি চিকেন আলফ্রেডো পাস্তা','Fettuccine in a velvety parmesan cream sauce with golden chicken strips.','ভেলভেটি পারমেসান ক্রিম সসে ফেটুচিনি ও সোনালি চিকেন স্ট্রিপস।',420,'pas',[],64),
+ I('crispy-fried-chicken','fried','Crispy Fried Chicken (4 pcs)','ক্রিস্পি ফ্রাইড চিকেন (৪ পিস)','Buttermilk-brined and double-fried for a crunch you can hear.','বাটারমিল্কে ম্যারিনেট করে দু’বার ভাজা — মচমচে স্বাদ।',450,'chk',['best'],92),
+ I('spicy-wings','fried','Spicy Chicken Wings (6 pcs)','স্পাইসি চিকেন উইংস (৬ পিস)','Crisp wings tossed in a fiery chilli-honey glaze.','ঝাল মরিচ-মধুর গ্লেজে মাখানো মচমচে উইংস।',340,'wng',[],72),
+ I('chicken-tikka-platter','grill','Chicken Tikka Platter','চিকেন টিক্কা প্লাটার','Charcoal-grilled tikka with mint chutney, salad and naan.','কয়লায় গ্রিল করা টিক্কা, পুদিনা চাটনি, সালাদ ও নান সহ।',480,'tik',['feat','chef'],80),
+ I('beef-seekh-kebab','grill','Beef Seekh Kebab','বিফ শিক কাবাব','Hand-minced beef with warm spices, grilled over open flame.','হাতে কিমা করা গরুর মাংস ও উষ্ণ মসলা, খোলা আগুনে গ্রিল।',420,'ski',[],60),
+ I('shorshe-ilish','trad','Shorshe Ilish','সর্ষে ইলিশ','Hilsa steamed in a sharp mustard-chilli paste — a Bengali icon. Seasonal.','তীক্ষ্ণ সর্ষে-মরিচ বাটায় ভাপে রান্না ইলিশ — বাঙালির আইকনিক পদ। মৌসুমি।',650,'ilh',['chef'],85,0),
+ I('beef-bhuna-paratha','trad','Beef Bhuna & Paratha','বিফ ভুনা ও পরোটা','Slow-cooked beef bhuna with flaky, hand-rolled parathas.','ধীরে রান্না করা গরুর ভুনা, সাথে ভাঁজ করা নরম পরোটা।',340,'bhu',['best'],88),
+ I('chicken-chowmein','chinese','Chicken Chowmein','চিকেন চাউমিন','Wok-tossed noodles with chicken, crisp vegetables and soy.','উনুনের তাপে ভাজা নুডলস, চিকেন, সবজি ও সয়া সসে।',280,'noo',[],66),
+ I('thai-green-curry','chinese','Thai Green Curry with Rice','থাই গ্রিন কারি ও ভাত','Coconut green curry with chicken, basil and jasmine rice.','নারকেল দুধে সবুজ কারি, চিকেন, বেসিল ও জেসমিন রাইস।',450,'cur',['chef'],58),
+ I('chicken-samosa','snacks','Chicken Samosa (4 pcs)','চিকেন সমুচা (৪ পিস)','Golden pastry parcels with spiced chicken filling.','মসলাদার চিকেন পুরে সোনালি ভাজা সমুচা।',160,'sam',[],74),
+ I('loaded-fries','snacks','Loaded Cheese Fries','লোডেড চিজ ফ্রাইজ','Crisp fries under molten cheese, jalapeño and herbs.','গলা চিজ, জালাপেনো ও হার্বসের নিচে মচমচে ফ্রাইজ।',220,'fry',['feat'],69),
+ I('lava-cake','dessert','Molten Chocolate Lava Cake','মল্টেন চকলেট লাভা কেক','Warm dark-chocolate cake with a molten centre.','উষ্ণ ডার্ক চকলেট কেক, ভেতরে গলা চকলেট।',260,'lav',['feat','best'],87),
+ I('rasmalai','dessert','Rasmalai','রসমালাই','Soft cheese dumplings soaked in cardamom-saffron milk.','এলাচ-জাফরান দুধে ভেজানো নরম ছানার মিষ্টি।',180,'des',[],62),
+ I('ember-latte','coffee','Signature Ember Latte','সিগনেচার এমবার ল্যাটে','Espresso, steamed milk and a whisper of caramelised spice.','এসপ্রেসো, স্টিমড দুধ ও ক্যারামেলাইজড মসলার হালকা ছোঁয়া।',220,'cof',['feat','chef'],84),
+ I('cold-coffee','coffee','Cold Coffee Frappe','কোল্ড কফি ফ্র্যাপে','Chilled, creamy blended coffee over ice.','বরফসহ ঠান্ডা ক্রিমি ব্লেন্ডেড কফি।',240,'cld',[],65),
+ I('mango-lassi','coffee','Mango Lassi','ম্যাঙ্গো লাচ্ছি','Thick yoghurt blended with ripe mango and a pinch of cardamom.','পাকা আম, ঘন দই ও এলাচ দিয়ে ব্লেন্ড করা।',180,'las',[],59),
+ /* combos and family packages (shown on the homepage; not part of the 11 menu categories) */
+ I('combo-duo','combo','Ember Duo Combo','এমবার ডুয়ো কম্বো','Signature Beef Burger + Loaded Fries + 2 soft drinks.','সিগনেচার বিফ বার্গার + লোডেড ফ্রাইজ + ২টি কোল্ড ড্রিংক।',790,'bur',['feat'],75),
+ I('combo-biryani','combo','Biryani Solo Feast','বিরিয়ানি সোলো ফিস্ট','Chicken Dum Biryani + Borhani + Rasmalai.','চিকেন দম বিরিয়ানি + বোরহানি + রসমালাই।',460,'bir',[],60),
+ I('family-4','family','Family Feast (serves 4)','ফ্যামিলি ফিস্ট (৪ জনের)','Mutton Kacchi, chicken tikka, fried chicken, salad and 4 drinks.','মাটন কাচ্চি, চিকেন টিক্কা, ফ্রাইড চিকেন, সালাদ ও ৪টি পানীয়।',1890,'f4',['feat'],77),
+ I('family-6','family','Grand Family Table (serves 6)','গ্র্যান্ড ফ্যামিলি টেবিল (৬ জনের)','Kacchi, polao, tikka, wings, two desserts and 6 drinks.','কাচ্চি, পোলাও, টিক্কা, উইংস, ২টি ডেজার্ট ও ৬টি পানীয়।',2690,'f6',[],52)
+];
+/* Options per category: sz = price add-on per size (2 values = Regular/Large, 3 = Small/Medium/Large), sp = spice level, ad = add-ons */
+const ADD={egg:{en:'Boiled egg',bn:'সেদ্ধ ডিম',p:25},borhani:{en:'Borhani',bn:'বোরহানি',p:60},salad:{en:'Fresh salad',bn:'সালাদ',p:30},cheese:{en:'Extra cheese',bn:'এক্সট্রা চিজ',p:50},patty:{en:'Extra patty',bn:'এক্সট্রা প্যাটি',p:150},mush:{en:'Mushrooms',bn:'মাশরুম',p:60},dip:{en:'Extra dip sauce',bn:'এক্সট্রা ডিপ সস',p:30},fries:{en:'Side of fries',bn:'ফ্রাইজ',p:80},rice:{en:'Steamed rice',bn:'সাদা ভাত',p:40},cream:{en:'Whipped cream',bn:'হুইপড ক্রিম',p:40},ice:{en:'Vanilla ice-cream scoop',bn:'ভ্যানিলা আইসক্রিম',p:60},shot:{en:'Extra espresso shot',bn:'এক্সট্রা এসপ্রেসো শট',p:50}};
+const CFG={biryani:{sz:[0,150],sp:1,ad:['egg','borhani','salad']},kacchi:{sz:[0,150],sp:1,ad:['borhani','salad','egg']},burger:{sz:[0],sp:0,ad:['cheese','patty','dip']},pizza:{sz:[0,200,400],sp:0,ad:['cheese','mush']},fried:{sz:[0],sp:1,ad:['dip','fries']},grill:{sz:[0],sp:1,ad:['salad','dip']},trad:{sz:[0],sp:1,ad:['rice','salad']},chinese:{sz:[0,100],sp:1,ad:['dip','egg']},snacks:{sz:[0],sp:0,ad:['dip']},dessert:{sz:[0],sp:0,ad:['cream','ice']},coffee:{sz:[0,40],sp:0,ad:['shot','cream']}};
+const cfg=it=>CFG[it.cat]||{sz:[0],sp:0,ad:[]};
+
+/* ---------- 4. TRANSLATIONS (UI text: [English, Bengali]) ---------- */
+const D={
+home:['Home','হোম'],menu:['Menu','মেনু'],about:['About','আমাদের কথা'],contact:['Contact','যোগাযোগ'],track:['Track Order','অর্ডার ট্র্যাক'],account:['Account','অ্যাকাউন্ট'],cart:['Cart','কার্ট'],theme:['Toggle theme','থিম পরিবর্তন'],
+tagline:['Where Every Meal Becomes a Memory.','প্রতিটি আহার হয়ে ওঠে এক স্মৃতি।'],
+h1a:['An evening kindled by','আগুনের আঁচে জ্বলে ওঠা'],h1b:['fire, flavour & craft.','স্বাদ ও শিল্পের সন্ধ্যা।'],
+heroP:['Slow-cooked classics, flame-grilled favourites and modern plates — crafted with care and served with warmth.','ধীর আঁচের ক্লাসিক, আগুনে ঝলসানো প্রিয় পদ আর আধুনিক খাবার — যত্নে তৈরি, উষ্ণতায় পরিবেশিত।'],
+explore:['Explore Menu','মেনু দেখুন'],orderNow:['Order Now','অর্ডার করুন'],viewAll:['View full menu','পুরো মেনু দেখুন'],
+featured:['Featured Dishes','বিশেষ খাবার'],featuredS:['Signature plates our kitchen is proudest of.','আমাদের রান্নাঘরের গর্বের সিগনেচার পদ।'],
+best:['Bestsellers','সর্বাধিক বিক্রিত'],bestS:['The dishes our guests return for.','যে খাবারের টানে অতিথিরা বারবার ফেরেন।'],
+chef:["Chef's Recommendations",'শেফের সুপারিশ'],chefS:['Hand-picked by the kitchen.','রান্নাঘরের বাছাই করা।'],
+cats:['Explore by Category','ক্যাটাগরি অনুযায়ী'],catsS:['Eleven kitchens, one standard.','এগারোটি ঘরানা, একই মান।'],
+offers:['Special Offers','বিশেষ অফার'],offersS:['Sample promotions — configurable in the code and admin.','নমুনা প্রমোশন — কোড ও অ্যাডমিন থেকে পরিবর্তনযোগ্য।'],
+freeDel:['Free delivery','ফ্রি ডেলিভারি'],freeDelS:['On orders above','এর উপরে অর্ডারে'],useCode:['Use code','কোড ব্যবহার করুন'],
+combos:['Combo Meals','কম্বো মিল'],combosS:['Complete plates, one price.','এক দামে সম্পূর্ণ খাবার।'],
+family:['Family Packages','ফ্যামিলি প্যাকেজ'],familyS:['Made for sharing around one table.','এক টেবিলে ভাগ করে খাওয়ার জন্য।'],
+story:['Our Story','আমাদের গল্প'],storyH:['Born from the glow of the fire.','আগুনের আভা থেকে জন্ম।'],
+storyP1:['THE EMBER was imagined as a place where slow cooking, honest ingredients and warm hospitality meet. Every plate begins with fire — and ends as a memory.','THE EMBER কল্পনা করা হয়েছে এমন এক জায়গা হিসেবে, যেখানে ধীর আঁচের রান্না, খাঁটি উপকরণ ও আন্তরিক আতিথেয়তা মেলে। প্রতিটি পদ শুরু হয় আগুনে — শেষ হয় স্মৃতিতে।'],
+storyP2:['This text is a sample brand story. Replace it with your own.','এটি একটি নমুনা ব্র্যান্ড গল্প। নিজের গল্প দিয়ে বদলে নিন।'],
+why:['Why Choose THE EMBER','কেন THE EMBER'],
+w1:['Flame & Craft','আগুন ও কারুশিল্প'],w1p:['Slow dum, charcoal and open-flame cooking done the traditional way.','ধীর দম, কয়লা ও খোলা আগুনে ঐতিহ্যবাহী পদ্ধতির রান্না।'],
+w2:['Honest Ingredients','খাঁটি উপকরণ'],w2p:['Fresh produce and carefully sourced proteins, prepared daily.','তাজা সবজি ও যত্নে সংগ্রহ করা প্রোটিন, প্রতিদিন প্রস্তুত।'],
+w3:['Warm Hospitality','আন্তরিক আতিথেয়তা'],w3p:['Service that makes every guest feel at home.','প্রতিটি অতিথি যেন ঘরের মতো অনুভব করেন।'],
+w4:['Delivery & Pickup','ডেলিভারি ও পিকআপ'],w4p:['Order for home delivery or collect from the restaurant.','বাসায় ডেলিভারি নিন বা রেস্তোরাঁ থেকে সংগ্রহ করুন।'],
+reviews:['Guest Reviews','অতিথিদের মতামত'],reviewsS:['Sample reviews shown as placeholders — not real customer feedback.','নমুনা রিভিউ প্লেসহোল্ডার হিসেবে দেখানো হয়েছে — প্রকৃত গ্রাহকের মতামত নয়।'],sample:['Sample','নমুনা'],
+dp:['Delivery & Pickup','ডেলিভারি ও পিকআপ'],hours:['Opening Hours','খোলার সময়'],loc:['Find Us','আমাদের খুঁজুন'],openMap:['Open in Google Maps','গুগল ম্যাপে খুলুন'],photoCredit:['Food photos: Wikimedia Commons (free licences — credits on each file page).','খাবারের ছবি: উইকিমিডিয়া কমন্স (মুক্ত লাইসেন্স — ক্রেডিট প্রতিটি ফাইল পেজে)।'],hoursNote:['Sample hours — edit in settings.','নমুনা সময় — সেটিংসে পরিবর্তন করুন।'],
+homeDel:['Home delivery','হোম ডেলিভারি'],pickup:['Pickup from restaurant','রেস্তোরাঁ থেকে পিকআপ'],fee:['Delivery fee','ডেলিভারি ফি'],free:['Free','ফ্রি'],
+news:['Join our table','আমাদের সাথে যুক্ত হোন'],newsS:['Seasonal menus and offers, straight to your inbox.','মৌসুমি মেনু ও অফার সরাসরি আপনার ইনবক্সে।'],emailPh:['Your email address','আপনার ইমেইল ঠিকানা'],subscribe:['Subscribe','সাবস্ক্রাইব'],newsOk:['Thanks! (Demo only — nothing was stored or sent.)','ধন্যবাদ! (শুধু ডেমো — কিছু সংরক্ষণ বা পাঠানো হয়নি।)'],
+demoBanner:['Frontend demonstration — no real orders, payments, SMS or emails are processed.','ফ্রন্টএন্ড ডেমো — কোনো প্রকৃত অর্ডার, পেমেন্ট, এসএমএস বা ইমেইল প্রক্রিয়া করা হয় না।'],
+/* menu */
+menuT:['Our Menu','আমাদের মেনু'],menuS:['Eleven kitchens. Search, filter and order with ease.','এগারোটি ঘরানা। সহজে খুঁজুন, ফিল্টার করুন ও অর্ডার করুন।'],all:['All','সব'],search:['Search dishes…','খাবার খুঁজুন…'],
+sortPop:['Most popular','জনপ্রিয়তা'],sortLow:['Price: low to high','দাম: কম থেকে বেশি'],sortHigh:['Price: high to low','দাম: বেশি থেকে কম'],sortName:['Name A–Z','নাম A–Z'],
+fFeat:['Featured','ফিচার্ড'],fBest:['Bestseller','বেস্টসেলার'],fChef:["Chef's pick",'শেফের পছন্দ'],unavail:['Unavailable','অনুপলব্ধ'],add:['Add','যোগ করুন'],noRes:['No dishes match your search.','কোনো খাবার পাওয়া যায়নি।'],clear:['Clear filters','ফিল্টার মুছুন'],
+size:['Size','সাইজ'],spice:['Spice level','ঝালের মাত্রা'],addons:['Add-ons','অ্যাড-অন'],instr:['Special instructions','বিশেষ নির্দেশনা'],instrPh:['E.g. no onions, extra napkins…','যেমন: পেঁয়াজ ছাড়া…'],
+mild:['Mild','কম ঝাল'],med:['Medium','মাঝারি'],hot:['Hot','বেশি ঝাল'],reg:['Regular','রেগুলার'],large:['Large','বড়'],small:['Small','ছোট'],medium:['Medium','মাঝারি'],
+addCart:['Add to cart','কার্টে যোগ করুন'],added:['Added to cart','কার্টে যোগ হয়েছে'],viewCart:['View cart','কার্ট দেখুন'],qty:['Quantity','পরিমাণ'],cat:['Category','ক্যাটাগরি'],availL:['Availability','প্রাপ্যতা'],inStock:['Available','পাওয়া যাচ্ছে'],backMenu:['Back to menu','মেনুতে ফিরুন'],notFound:['This page or dish could not be found.','এই পাতা বা খাবার খুঁজে পাওয়া যায়নি।'],
+/* cart */
+cartT:['Your Cart','আপনার কার্ট'],emptyCart:['Your cart is empty.','আপনার কার্ট খালি।'],emptyS:['Discover something delicious on our menu.','আমাদের মেনুতে সুস্বাদু কিছু খুঁজে নিন।'],
+subtotal:['Subtotal','সাবটোটাল'],discount:['Discount','ছাড়'],delivery:['Delivery','ডেলিভারি'],total:['Total','সর্বমোট'],
+couponPh:['Coupon code','কুপন কোড'],apply:['Apply','প্রয়োগ'],remove:['Remove','মুছুন'],edit:['Edit','সম্পাদনা'],save:['Save','সংরক্ষণ'],cancel:['Cancel','বাতিল'],
+cOk:['Coupon applied','কুপন প্রয়োগ হয়েছে'],cBad:['Invalid coupon code','কুপন কোডটি সঠিক নয়'],cMin:['Minimum order not reached for this coupon','এই কুপনের জন্য ন্যূনতম অর্ডার পূর্ণ হয়নি'],
+continue:['Continue shopping','কেনাকাটা চালিয়ে যান'],checkout:['Proceed to checkout','চেকআউটে যান'],
+/* checkout */
+checkoutT:['Checkout','চেকআউট'],step1:['1 · Details','১ · তথ্য'],step2:['2 · Review & place','২ · রিভিউ ও অর্ডার'],
+custInfo:['Customer information','গ্রাহকের তথ্য'],fullName:['Full name','পূর্ণ নাম'],mobile:['Mobile number','মোবাইল নম্বর'],emailOpt:['Email (optional)','ইমেইল (ঐচ্ছিক)'],address:['Delivery address','ডেলিভারি ঠিকানা'],city:['City','শহর'],area:['Area','এলাকা'],dnote:['Delivery instructions','ডেলিভারি নির্দেশনা'],
+method:['Delivery method','ডেলিভারি পদ্ধতি'],payM:['Payment method','পেমেন্ট পদ্ধতি'],cod:['Cash on Delivery','ক্যাশ অন ডেলিভারি'],bkash:['bKash','বিকাশ'],nagad:['Nagad','নগদ'],card:['Card','কার্ড'],
+payNote:['Selection only — no real payment is processed in this demo.','শুধু নির্বাচন — এই ডেমোতে কোনো প্রকৃত পেমেন্ট প্রক্রিয়া হয় না।'],
+reviewOrder:['Review order','অর্ডার রিভিউ'],back:['Back','পিছনে'],place:['Place order (demo)','অর্ডার করুন (ডেমো)'],orderSum:['Order summary','অর্ডার সারাংশ'],
+eName:['Please enter your full name.','অনুগ্রহ করে পূর্ণ নাম লিখুন।'],ePhone:['Enter a valid Bangladesh mobile number (e.g. 01712345678).','সঠিক বাংলাদেশি মোবাইল নম্বর দিন (যেমন ০১৭১২৩৪৫৬৭৮)।'],eEmail:['Enter a valid email address.','সঠিক ইমেইল ঠিকানা দিন।'],eAddr:['Please enter your delivery address.','ডেলিভারি ঠিকানা লিখুন।'],eArea:['Please enter your area.','আপনার এলাকা লিখুন।'],eCart:['Your cart is empty.','আপনার কার্ট খালি।'],eReq:['This field is required.','এই ঘরটি পূরণ আবশ্যক।'],
+/* confirm / track */
+okT:['Order placed (demo)','অর্ডার সম্পন্ন (ডেমো)'],okS:['This is a frontend demonstration. The restaurant has NOT received this order and no payment was taken.','এটি একটি ফ্রন্টএন্ড ডেমো। রেস্তোরাঁ এই অর্ডার পায়নি এবং কোনো পেমেন্ট নেওয়া হয়নি।'],
+ref:['Order reference','অর্ডার রেফারেন্স'],est:['Estimated time (illustrative)','আনুমানিক সময় (উদাহরণমাত্র)'],mins:['min','মিনিট'],trackOrder:['Track this order','অর্ডার ট্র্যাক করুন'],toHome:['Back to home','হোমে ফিরুন'],cust:['Customer','গ্রাহক'],
+st0:['Order Placed','অর্ডার গ্রহণ'],st1:['Order Confirmed','অর্ডার নিশ্চিত'],st2:['Preparing','প্রস্তুত হচ্ছে'],st3:['Ready for Delivery','ডেলিভারির জন্য প্রস্তুত'],st4:['On the Way','পথে আছে'],st5:['Delivered','ডেলিভারি সম্পন্ন'],
+trackS:['Illustrative simulation only — no restaurant staff or delivery system updates these stages.','শুধু সিমুলেশন — কোনো রেস্তোরাঁ কর্মী বা ডেলিভারি সিস্টেম এই ধাপগুলো আপডেট করে না।'],trackPh:['Order reference, e.g. EMB-261123-AB12','অর্ডার রেফারেন্স, যেমন EMB-261123-AB12'],trackGo:['Track','ট্র্যাক'],noOrder:['No order found with that reference on this device.','এই ডিভাইসে এই রেফারেন্সের কোনো অর্ডার পাওয়া যায়নি।'],
+/* auth */
+login:['Log in','লগইন'],register:['Create account','অ্যাকাউন্ট তৈরি'],forgot:['Forgot password?','পাসওয়ার্ড ভুলে গেছেন?'],pass:['Password','পাসওয়ার্ড'],pass2:['Confirm password','পাসওয়ার্ড নিশ্চিত করুন'],logout:['Log out','লগআউট'],
+authNote:['Demo UI only — no real authentication. Passwords are never stored.','শুধু ডেমো UI — প্রকৃত অথেনটিকেশন নেই। পাসওয়ার্ড কখনো সংরক্ষণ করা হয় না।'],
+ePass:['Password must be at least 6 characters.','পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।'],ePass2:['Passwords do not match.','পাসওয়ার্ড মেলেনি।'],
+hello:['Welcome','স্বাগতম'],forgotT:['Reset password','পাসওয়ার্ড রিসেট'],forgotS:['Enter your email. (Demo — no email will be sent.)','ইমেইল দিন। (ডেমো — কোনো ইমেইল পাঠানো হবে না।)'],sendLink:['Send reset link','রিসেট লিংক পাঠান'],forgotOk:['Demo: no email was sent.','ডেমো: কোনো ইমেইল পাঠানো হয়নি।'],
+profile:['My Profile','আমার প্রোফাইল'],details:['Details','বিস্তারিত'],history:['Order history','অর্ডার ইতিহাস'],addrs:['Saved addresses','সংরক্ষিত ঠিকানা'],noOrders:['No orders yet on this device.','এই ডিভাইসে এখনো কোনো অর্ডার নেই।'],addAddr:['Add address','ঠিকানা যোগ করুন'],label:['Label (Home, Work…)','লেবেল (বাসা, অফিস…)'],noAddr:['No saved addresses.','কোনো সংরক্ষিত ঠিকানা নেই।'],useAddr:['Use at checkout','চেকআউটে ব্যবহার'],
+needLogin:['Please log in to view your profile.','প্রোফাইল দেখতে লগইন করুন।'],loggedIn:['Signed in (demo)','সাইন ইন হয়েছে (ডেমো)'],
+/* info */
+aboutT:['About THE EMBER','THE EMBER সম্পর্কে'],aboutS:['A premium dining experience built around fire, flavour and hospitality.','আগুন, স্বাদ ও আতিথেয়তায় গড়া এক প্রিমিয়াম ডাইনিং অভিজ্ঞতা।'],
+contactT:['Contact Us','যোগাযোগ'],contactS:['We would love to hear from you.','আপনার কথা শুনতে আমরা আগ্রহী।'],msg:['Message','বার্তা'],send:['Send message','বার্তা পাঠান'],sentOk:['Thanks! (Demo only — your message was not sent.)','ধন্যবাদ! (শুধু ডেমো — বার্তাটি পাঠানো হয়নি।)'],phoneL:['Phone','ফোন'],emailL:['Email','ইমেইল'],addrL:['Address','ঠিকানা'],sampleDetails:['Sample details — update in code or admin settings.','নমুনা তথ্য — কোড বা অ্যাডমিন সেটিংসে পরিবর্তন করুন।'],
+faqT:['Frequently Asked Questions','সাধারণ জিজ্ঞাসা'],privacy:['Privacy Policy','প্রাইভেসি পলিসি'],terms:['Terms & Conditions','শর্তাবলি'],refund:['Refund & Cancellation','রিফান্ড ও বাতিল'],deliveryP:['Delivery Policy','ডেলিভারি পলিসি'],faq:['FAQ','সাধারণ জিজ্ঞাসা'],
+polNote:['Sample editable content — not legal advice. Have your policies reviewed before real use.','নমুনা সম্পাদনাযোগ্য বিষয়বস্তু — আইনি পরামর্শ নয়। বাস্তব ব্যবহারের আগে নীতিমালা যাচাই করুন।'],
+quick:['Quick links','দ্রুত লিংক'],policies:['Policies','নীতিমালা'],visit:['Visit & contact','দেখা করুন'],rights:['All rights reserved. Frontend demonstration.','সর্বস্বত্ব সংরক্ষিত। ফ্রন্টএন্ড ডেমো।'],
+/* admin */
+admin:['Admin','অ্যাডমিন'],aOverview:['Overview','ওভারভিউ'],aOrders:['Orders','অর্ডার'],aProducts:['Products','পণ্য'],aCats:['Categories','ক্যাটাগরি'],aCust:['Customers','গ্রাহক'],aPromo:['Promotions','প্রমোশন'],aRev:['Reviews','রিভিউ'],aSet:['Settings','সেটিংস'],
+aNote:['Frontend prototype — no authentication. Rows marked “Sample” are not real business records. Your edits are saved only in this browser.','ফ্রন্টএন্ড প্রোটোটাইপ — অথেনটিকেশন নেই। “নমুনা” চিহ্নিত সারি প্রকৃত ব্যবসায়িক রেকর্ড নয়। আপনার পরিবর্তন শুধু এই ব্রাউজারে সংরক্ষিত।'],
+totOrders:['Total orders','মোট অর্ডার'],revenue:['Revenue','আয়'],avgOrder:['Avg. order','গড় অর্ডার'],prodCount:['Products','পণ্য'],revChart:['Revenue — last 7 days (sample data)','আয় — শেষ ৭ দিন (নমুনা ডেটা)'],recent:['Recent orders','সাম্প্রতিক অর্ডার'],popular:['Popular products (sample metric)','জনপ্রিয় পণ্য (নমুনা মেট্রিক)'],
+status:['Status','স্ট্যাটাস'],date:['Date','তারিখ'],items:['Items','আইটেম'],view:['View','দেখুন'],allSt:['All statuses','সব স্ট্যাটাস'],name:['Name','নাম'],price:['Price','দাম'],avail:['Available','পাওয়া যায়'],actions:['Actions','অ্যাকশন'],
+addProd:['Add product','পণ্য যোগ'],editProd:['Edit product','পণ্য সম্পাদনা'],del:['Delete','ডিলিট'],confirmDel:['Delete this item?','এটি ডিলিট করবেন?'],nameEn:['English name','ইংরেজি নাম'],nameBn:['Bengali name','বাংলা নাম'],descEn:['English description','ইংরেজি বিবরণ'],descBn:['Bengali description','বাংলা বিবরণ'],imgUrl:['Image URL','ছবির URL'],
+addCat:['Add category','ক্যাটাগরি যোগ'],editCat:['Edit category','ক্যাটাগরি সম্পাদনা'],catHasItems:['Move or delete its products first.','আগে এর পণ্যগুলো সরান বা ডিলিট করুন।'],
+orders:['Orders','অর্ডার'],spent:['Spent','ব্যয়'],coupons:['Coupons','কুপন'],code:['Code','কোড'],type:['Type','ধরন'],value:['Value','মান'],minOrder:['Min. order','ন্যূনতম অর্ডার'],pct:['Percent','শতাংশ'],flat:['Flat ৳','নির্দিষ্ট ৳'],addCoupon:['Add coupon','কুপন যোগ'],
+approve:['Approve','অনুমোদন'],hide:['Hide','লুকান'],visible:['Visible','দৃশ্যমান'],hidden:['Hidden','লুকানো'],
+setSave:['Save settings','সেটিংস সংরক্ষণ'],saved:['Saved','সংরক্ষিত'],rName:['Restaurant name','রেস্তোরাঁর নাম'],rAddr:['Address','ঠিকানা'],rAddrBn:['Address (Bengali)','ঠিকানা (বাংলা)'],rPhone:['Phone','ফোন'],rEmail:['Email','ইমেইল'],rHours:['Opening hours (text)','খোলার সময় (লেখা)'],rFee:['Delivery fee (৳)','ডেলিভারি ফি (৳)'],rFree:['Free delivery above (৳)','এর উপরে ফ্রি ডেলিভারি (৳)'],rLogo:['Logo image URL (optional)','লোগো ইমেইজ URL (ঐচ্ছিক)'],resetData:['Reset all demo data','সব ডেমো ডেটা রিসেট'],resetOk:['Reset this browser’s demo data?','এই ব্রাউজারের ডেমো ডেটা রিসেট করবেন?'],exitAdmin:['← Back to website','← ওয়েবসাইটে ফিরুন'],close:['Close','বন্ধ করুন'],
+};
+
+/* ---------- 5. SAMPLE CONTENT: reviews, FAQ, policies ---------- */
+const REVIEWS0=[
+ {id:1,name:'Sample Guest A',en:'A placeholder review. Replace with real guest feedback once you have it.',bn:'এটি একটি প্লেসহোল্ডার রিভিউ। প্রকৃত মতামত পেলে এটি বদলে দিন।',stars:5,show:true,sample:true},
+ {id:2,name:'Sample Guest B',en:'Another placeholder — this is not a real customer statement.',bn:'আরেকটি প্লেসহোল্ডার — এটি প্রকৃত গ্রাহকের বক্তব্য নয়।',stars:5,show:true,sample:true},
+ {id:3,name:'Sample Guest C',en:'Sample text showing how reviews will look on the page.',bn:'পাতায় রিভিউ কেমন দেখাবে তা বোঝাতে নমুনা লেখা।',stars:4,show:true,sample:true}
+];
+const FAQ=[
+ ['Is this a real restaurant order system?','এটি কি প্রকৃত রেস্তোরাঁ অর্ডার সিস্টেম?','No. This is a frontend demonstration. Orders are stored only in your browser and are not sent to any restaurant.','না। এটি একটি ফ্রন্টএন্ড ডেমো। অর্ডার শুধু আপনার ব্রাউজারে সংরক্ষিত থাকে, কোনো রেস্তোরাঁয় পাঠানো হয় না।'],
+ ['Which payment methods are available?','কোন কোন পেমেন্ট পদ্ধতি আছে?','Cash on Delivery, bKash, Nagad and Card are shown as selection options only. No payment is processed in this demo.','ক্যাশ অন ডেলিভারি, বিকাশ, নগদ ও কার্ড শুধু নির্বাচনের অপশন হিসেবে দেখানো হয়েছে। এই ডেমোতে কোনো পেমেন্ট হয় না।'],
+ ['How is the delivery fee calculated?','ডেলিভারি ফি কীভাবে হিসাব হয়?','A flat configurable fee applies to home delivery, and delivery is free above a configurable order value. Pickup has no fee.','হোম ডেলিভারিতে একটি নির্দিষ্ট (পরিবর্তনযোগ্য) ফি প্রযোজ্য; নির্দিষ্ট অর্ডার মূল্যের উপরে ডেলিভারি ফ্রি। পিকআপে কোনো ফি নেই।'],
+ ['Can I use coupon codes?','কুপন কোড ব্যবহার করা যাবে?','Yes. Try EMBER10 or WELCOME50 in the cart (sample codes).','হ্যাঁ। কার্টে EMBER10 বা WELCOME50 চেষ্টা করুন (নমুনা কোড)।'],
+ ['Does the website remember my cart?','ওয়েবসাইট কি আমার কার্ট মনে রাখে?','Yes, your cart is saved in this browser and survives refresh and language changes.','হ্যাঁ, আপনার কার্ট এই ব্রাউজারে সংরক্ষিত থাকে এবং রিফ্রেশ বা ভাষা পরিবর্তনেও থাকে।'],
+ ['How do I change the website language?','ভাষা কীভাবে বদলাব?','Use the EN | বাংলা switch in the top bar. Your cart and selections are kept.','উপরের বারের EN | বাংলা সুইচ ব্যবহার করুন। কার্ট ও নির্বাচন অক্ষুণ্ণ থাকে।']
+];
+const POL={
+privacy:[
+ ['Information we collect','আমরা যে তথ্য সংগ্রহ করি','In this demo, details you enter (name, phone, address) are stored only in your own browser. Replace this text with your real data practices.','এই ডেমোতে আপনার দেওয়া তথ্য (নাম, ফোন, ঠিকানা) শুধু আপনার নিজের ব্রাউজারে সংরক্ষিত হয়। বাস্তব তথ্য-নীতি দিয়ে এই লেখা বদলে নিন।'],
+ ['How information is used','তথ্য কীভাবে ব্যবহৃত হয়','Sample: information would be used to prepare and deliver orders and to contact you about them.','নমুনা: তথ্য অর্ডার প্রস্তুত, ডেলিভারি ও সে বিষয়ে যোগাযোগে ব্যবহৃত হবে।'],
+ ['Your choices','আপনার সিদ্ধান্ত','You can clear all demo data at any time by clearing this site’s browser storage.','এই সাইটের ব্রাউজার স্টোরেজ মুছে আপনি যেকোনো সময় সব ডেমো ডেটা মুছতে পারেন।']],
+terms:[
+ ['Use of this website','ওয়েবসাইট ব্যবহার','This site is a demonstration. Menu items, prices and availability are sample content and may change.','এই সাইটটি একটি ডেমো। মেনু, দাম ও প্রাপ্যতা নমুনা বিষয়বস্তু এবং পরিবর্তন হতে পারে।'],
+ ['Orders','অর্ডার','Orders placed here are not transmitted to any restaurant. Replace this with your real order terms.','এখানে করা অর্ডার কোনো রেস্তোরাঁয় পাঠানো হয় না। আপনার প্রকৃত শর্ত দিয়ে এটি বদলে নিন।'],
+ ['Changes','পরিবর্তন','Terms can be edited at any time. Have them reviewed by a qualified professional before real use.','শর্তাবলি যেকোনো সময় সম্পাদনা করা যায়। বাস্তব ব্যবহারের আগে যোগ্য পেশাজীবীকে দিয়ে যাচাই করুন।']],
+refund:[
+ ['Cancellations','বাতিল','Sample: orders may be cancelled before preparation begins. Define your own cut-off time here.','নমুনা: প্রস্তুত শুরুর আগে অর্ডার বাতিল করা যাবে। এখানে আপনার নিজস্ব সময়সীমা লিখুন।'],
+ ['Refunds','রিফান্ড','Sample: describe when and how refunds are issued for incorrect or unsatisfactory orders.','নমুনা: ভুল বা অসন্তোষজনক অর্ডারে কখন ও কীভাবে রিফান্ড দেওয়া হবে তা লিখুন।']],
+delivery:[
+ ['Delivery areas','ডেলিভারি এলাকা','Sample: configure the areas you serve. Delivery zones are placeholders in this demo.','নমুনা: আপনি যেসব এলাকায় সেবা দেন তা নির্ধারণ করুন। এই ডেমোতে ডেলিভারি জোন প্লেসহোল্ডার।'],
+ ['Fees and timing','ফি ও সময়','A configurable flat fee applies, with free delivery above a set order value. Times shown are illustrative estimates, not guarantees.','একটি পরিবর্তনযোগ্য নির্দিষ্ট ফি প্রযোজ্য; নির্দিষ্ট মূল্যের উপরে ফ্রি ডেলিভারি। দেখানো সময় আনুমানিক, নিশ্চয়তা নয়।'],
+ ['Pickup','পিকআপ','Pickup from the restaurant has no delivery fee.','রেস্তোরাঁ থেকে পিকআপে কোনো ডেলিভারি ফি নেই।']]
+};
+const CITIES=[['Sunamganj','সুনামগঞ্জ'],['Sylhet','সিলেট'],['Dhaka','ঢাকা'],['Chattogram','চট্টগ্রাম'],['Other','অন্যান্য']];
+
+/* ---------- 6. STATE & HELPERS ---------- */
+const store={get(k,d){try{const v=localStorage.getItem('ember_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('ember_'+k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem('ember_'+k)}catch(e){}}};
+let lang=(()=>{try{return localStorage.getItem('ember_lang')==='bn'?'bn':'en'}catch(e){return 'en'}})();
+const S={
+ cats:store.get('cats',null)||CATS0.map(c=>({...c})),
+ products:store.get('products',null)||PRODUCTS0.map(p=>({...p,tags:[...p.tags]})),
+ cart:store.get('cart',[]),orders:store.get('orders',[]),user:store.get('user',null),addrs:store.get('addrs',[]),
+ settings:{...DEF_SET,...store.get('settings',{})},
+ coupons:store.get('coupons',null)||DEF_COUPONS.map(c=>({...c})),
+ reviews:store.get('reviews',null)||REVIEWS0.map(r=>({...r})),
+ coupon:store.get('coupon',null),ost:store.get('ost',{})
+};
+const UI={cat:'all',q:'',sort:'pop'};
+const CK={step:1,method:'delivery',pay:'cod',name:'',phone:'',email:'',address:'',city:'Sunamganj',area:'',note:'',errors:{}};
+if(S.user){CK.name=S.user.name||'';CK.phone=S.user.phone||'';CK.email=S.user.email||''}
+let DET=null,EDIT=null,PTAB='details',MODALFN=null,trackTimer=null,lastBump=false;
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const T=(k,lg)=>{const v=D[k];return v?v[(lg||lang)==='bn'?1:0]:k};
+const t=k=>T(k);
+const L=(en,bn)=>lang==='bn'?(bn||en):en;
+const nm=it=>L(it.en,it.bn),ds=it=>L(it.de,it.db);
+const cat=id=>S.cats.find(c=>c.id===id);
+const cn=id=>{const c=cat(id);return c?L(c.en,c.bn):''};
+const num=n=>Number(n).toLocaleString(lang==='bn'?'bn-BD':'en-US');
+const money=n=>'৳'+num(Math.round(n));
+const prod=id=>S.products.find(p=>p.id===id);
+const inMenu=p=>S.cats.some(c=>c.id===p.cat);
+const img=(it,cls)=>`<img ${cls?`class="${cls}" `:''}src="${esc(it.img||ph(it.en))}" alt="${esc(it.en)}" loading="lazy" onerror="this.onerror=null;this.src=ph(this.alt)">`;
+const szLabel=(n,i,lg)=>T(n===2?['reg','large'][i]:['small','medium','large'][i],lg);
+const spLabel=(i,lg)=>T(['mild','med','hot'][i],lg);
+const valid={phone:v=>/^(?:\+?88)?01[3-9]\d{8}$/.test(String(v).replace(/[\s-]/g,'')),email:v=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)};
+const ST=['st0','st1','st2','st3','st4','st5'];
+function toast(msg,actLabel,actFn){const el=document.createElement('div');el.className='toast';el.innerHTML=`<span>${esc(msg)}</span>${actLabel?`<button>${esc(actLabel)}</button>`:''}`;if(actLabel)el.querySelector('button').onclick=()=>{actFn();el.remove()};$('#toasts').appendChild(el);setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),450)},3600)}
+
+/* ---------- 7. CART LOGIC ---------- */
+function unit(it,l){const c=cfg(it);return it.price+(c.sz[l.size]||0)+(l.ad||[]).reduce((s,a)=>s+(ADD[a]?ADD[a].p:0),0)}
+const lineKey=l=>[l.id,l.size,l.spice,[...(l.ad||[])].sort().join('+'),(l.note||'').trim()].join('|');
+const cartLines=()=>S.cart.filter(l=>prod(l.id));
+const cartCount=()=>cartLines().reduce((s,l)=>s+l.qty,0);
+function saveCart(){store.set('cart',S.cart);refreshChrome()}
+function addLine(l){const it=prod(l.id);if(!it||!it.av)return false;
+ const n={id:l.id,qty:Math.min(99,Math.max(1,l.qty|0)),size:l.size|0,spice:l.spice==null?(cfg(it).sp?1:0):l.spice|0,ad:[...(l.ad||[])],note:(l.note||'').slice(0,200)};n.key=lineKey(n);
+ const ex=S.cart.find(x=>x.key===n.key);if(ex)ex.qty=Math.min(99,ex.qty+n.qty);else S.cart.push(n);lastBump=true;saveCart();return true}
+function optsText(it,l,lg){const c=cfg(it),p=[];if(c.sz.length>1)p.push(szLabel(c.sz.length,l.size,lg));if(c.sp)p.push(spLabel(l.spice,lg));(l.ad||[]).forEach(a=>ADD[a]&&p.push((lg||lang)==='bn'?ADD[a].bn:ADD[a].en));if(l.note)p.push('“'+l.note+'”');return p.join(' · ')}
+function calc(method){method=method||CK.method;let sub=0;cartLines().forEach(l=>{sub+=unit(prod(l.id),l)*l.qty});
+ const c=S.coupon&&S.coupons.find(x=>x.code===S.coupon);let disc=0;
+ if(c&&sub>=c.min)disc=c.type==='pct'?Math.round(sub*c.v/100):Math.min(c.v,sub);
+ const net=sub-disc;let del=0;if(cartLines().length&&method==='delivery')del=net>=S.settings.freeAbove?0:S.settings.deliveryFee;
+ return{sub,disc,del,total:net+del,coupon:c||null,couponMin:!!(c&&sub<c.min)}}
+function applyCoupon(code){code=(code||'').trim().toUpperCase();const c=S.coupons.find(x=>x.code===code);
+ if(!c){toast(t('cBad'));return false}const sub=calc().sub;if(sub<c.min){toast(t('cMin')+' ('+money(c.min)+')');return false}
+ S.coupon=code;store.set('coupon',code);toast(t('cOk')+': '+code);refreshChrome();refreshPageIfCart();return true}
+function mkRef(){const d=new Date(),p=n=>String(n).padStart(2,'0');return 'EMB-'+String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate())+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
+
+/* ---------- 8. SHARED UI PIECES ---------- */
+const flame=()=>`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6c3 10 16 15 16 31a16 16 0 0 1-32 0c0-9 5-12 8-19 3 3 5 7 5 10 4-6 6-14 3-22z" fill="#C76A3A"/><path d="M32 33c3 5 8 7 8 13a8 8 0 0 1-16 0c0-5 4-7 8-13z" fill="#D6A45D"/></svg>`;
+const logo=()=>`<a class="logo" href="#/" aria-label="THE EMBER">${S.settings.logoUrl?`<img src="${esc(S.settings.logoUrl)}" alt="" style="width:30px;height:30px;object-fit:contain" onerror="this.style.display='none'">`:flame()}<span><b>THE EMBER</b></span></a>`;
+const ic={cart:'<svg viewBox="0 0 24 24"><path d="M6 7h14l-1.5 8.5H8L6 3H3"/><circle cx="9" cy="20" r="1"/><circle cx="17" cy="20" r="1"/></svg>',user:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>',menu:'<svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',theme:'<svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'};
+function hdrHTML(){const seg=curRoute()[0];const a=(h,k)=>`<a href="#/${h}" class="${seg===h?'on':''}">${t(k)}</a>`;
+ return `<header class="hd" id="hd"><div class="wrap hd-in">${logo()}<nav class="nav">${a('','home')}${a('menu','menu')}${a('about','about')}${a('contact','contact')}${a('track','track')}</nav>
+ <div class="hd-act"><div class="lang" role="group" aria-label="Language"><button data-act="lang" data-l="en" class="${lang==='en'?'on':''}">EN</button><button data-act="lang" data-l="bn" class="${lang==='bn'?'on':''}">বাংলা</button></div>
+ <button class="ib theme-ic" data-act="theme" aria-label="${t('theme')}">${ic.theme}</button>
+ <a class="ib" href="#/${S.user?'profile':'login'}" aria-label="${t('account')}">${ic.user}</a>
+ <button class="ib" data-act="cartOpen" aria-label="${t('cart')}">${ic.cart}<span class="cnt ${lastBump?'bump':''}" ${cartCount()?'':'hidden'}>${num(cartCount())}</span></button>
+ <button class="ib burger" data-act="nav" aria-label="Menu">${ic.menu}</button></div></div></header>`}
+function ftrHTML(){const s=S.settings;
+ return `<footer class="ft"><div class="wrap"><div class="ft-g"><div>${logo()}<p><em>${t('tagline')}</em></p><p>${esc(L(s.address,s.addressBn))}</p></div>
+ <div><h4>${t('quick')}</h4><ul><li><a href="#/menu">${t('menu')}</a></li><li><a href="#/about">${t('about')}</a></li><li><a href="#/contact">${t('contact')}</a></li><li><a href="#/faq">${t('faq')}</a></li><li><a href="#/track">${t('track')}</a></li></ul></div>
+ <div><h4>${t('policies')}</h4><ul><li><a href="#/privacy">${t('privacy')}</a></li><li><a href="#/terms">${t('terms')}</a></li><li><a href="#/refund">${t('refund')}</a></li><li><a href="#/delivery">${t('deliveryP')}</a></li><li><a href="#/admin">${t('admin')} (demo)</a></li></ul></div>
+ <div><h4>${t('visit')}</h4><ul><li>${esc(s.phone)}</li><li>${esc(s.email)}</li><li><a href="${esc(s.social.facebook)}">Facebook</a> · <a href="${esc(s.social.instagram)}">Instagram</a> · <a href="${esc(s.social.youtube)}">YouTube</a></li></ul></div></div>
+ <div class="ft-b"><span>© ${new Date().getFullYear()} THE EMBER — ${t('rights')}</span><span>${t('demoBanner')}</span><span>${t('photoCredit')}</span></div></div></footer>`}
+function secHead(eb,h,p,c){return `<div class="sec-h ${c?'c':''} rv"><div class="eyebrow">${t(eb)}</div><h2>${t(h)}</h2>${p?`<p>${t(p)}</p>`:''}</div>`}
+function badges(it){const b=[];if(!it.av)b.push(`<span class="bd off">${t('unavail')}</span>`);else{if(it.tags.includes('best'))b.push(`<span class="bd">${t('fBest')}</span>`);if(it.tags.includes('feat'))b.push(`<span class="bd">${t('fFeat')}</span>`);if(it.tags.includes('chef'))b.push(`<span class="bd">${t('fChef')}</span>`)}return `<div class="badges">${b.join('')}</div>`}
+function card(it,i){return `<article class="fc rv" style="--d:${(i%4)*.08}s"><a class="fc-img" href="#/food/${esc(it.id)}">${img(it)}${badges(it)}</a>
+ <div class="fc-b"><div class="fc-cat">${esc(cn(it.cat)||t('combos'))}</div><h3><a href="#/food/${esc(it.id)}">${esc(nm(it))}</a></h3><p>${esc(ds(it))}</p>
+ <div class="fc-f"><span class="pr">${money(it.price)}</span><button class="btn btn-p sm" data-act="quick" data-id="${esc(it.id)}" ${it.av?'':'disabled'}>${it.av?t('add'):t('unavail')}</button></div></div></article>`}
+const cardsBy=(tag,n)=>S.products.filter(p=>p.tags.includes(tag)&&inMenu(p)).slice(0,n).map(card).join('');
+
+/* option chooser (food page + cart edit modal) */
+function optsHTML(it,sel,pfx){const c=cfg(it);let h='';
+ if(c.sz.length>1)h+=`<div class="og"><h4>${t('size')}</h4><div class="chips">${c.sz.map((a,i)=>`<label class="chip"><input type="radio" name="${pfx}sz" value="${i}" ${sel.size===i?'checked':''}><span>${szLabel(c.sz.length,i)}${a?` <em>+${money(a)}</em>`:''}</span></label>`).join('')}</div></div>`;
+ if(c.sp)h+=`<div class="og"><h4>${t('spice')}</h4><div class="chips">${[0,1,2].map(i=>`<label class="chip"><input type="radio" name="${pfx}sp" value="${i}" ${sel.spice===i?'checked':''}><span>${spLabel(i)}</span></label>`).join('')}</div></div>`;
+ if(c.ad.length)h+=`<div class="og"><h4>${t('addons')}</h4><div class="chips">${c.ad.map(a=>`<label class="chip"><input type="checkbox" name="${pfx}ad" value="${a}" ${sel.ad.includes(a)?'checked':''}><span>${esc(L(ADD[a].en,ADD[a].bn))} <em>+${money(ADD[a].p)}</em></span></label>`).join('')}</div></div>`;
+ h+=`<div class="og"><h4>${t('instr')}</h4><textarea class="note" maxlength="200" placeholder="${t('instrPh')}">${esc(sel.note)}</textarea></div>`;return h}
+function readOpts(root,sel,pfx){const g=n=>root.querySelector(`input[name="${pfx}${n}"]:checked`);sel.size=g('sz')?+g('sz').value:0;sel.spice=g('sp')?+g('sp').value:(cfg(prod(sel.id)).sp?1:0);sel.ad=$$(`input[name="${pfx}ad"]:checked`,root).map(x=>x.value);const n=$('textarea.note',root);sel.note=n?n.value:''}
+function updPrice(root,sel){const it=prod(sel.id),p=$('.js-price',root);if(p)p.textContent=money(unit(it,sel)*sel.qty);const q=$('.qv',root);if(q)q.textContent=num(sel.qty)}
+
+/* cart pieces */
+function linesHTML(){return cartLines().map(l=>{const it=prod(l.id),o=optsText(it,l);return `<div class="line">${img(it)}<div><h4>${esc(nm(it))}</h4>${o?`<small>${esc(o)}</small>`:''}
+ <div class="qty"><button data-act="dec" data-key="${esc(l.key)}" aria-label="−">−</button><b>${num(l.qty)}</b><button data-act="inc" data-key="${esc(l.key)}" aria-label="+">+</button></div>
+ <div style="margin-top:6px"><button class="link" data-act="edit" data-key="${esc(l.key)}">${t('edit')}</button> · <button class="link" data-act="rm" data-key="${esc(l.key)}">${t('remove')}</button></div></div><b class="pr">${money(unit(it,l)*l.qty)}</b></div>`}).join('')}
+function couponHTML(){const c=calc();return `<form class="coupon" data-form="coupon"><input name="code" placeholder="${t('couponPh')}" value="${esc(S.coupon||'')}" aria-label="${t('couponPh')}"><button class="btn btn-o sm" type="submit">${t('apply')}</button></form>${c.couponMin?`<p class="mu" style="font-size:.8rem;margin:-6px 0 8px">${t('cMin')} (${money(c.coupon.min)})</p>`:''}`}
+function totalsHTML(method){const c=calc(method);return `<div class="tot"><span>${t('subtotal')}</span><span>${money(c.sub)}</span></div>
+ ${c.disc?`<div class="tot"><span>${t('discount')} (${esc(c.coupon.code)})</span><span>−${money(c.disc)}</span></div>`:''}
+ <div class="tot"><span>${t('delivery')}</span><span>${c.del?money(c.del):(method||CK.method)==='pickup'?'—':t('free')}</span></div><div class="tot g"><span>${t('total')}</span><span>${money(c.total)}</span></div>`}
+function emptyCartHTML(){return `<div class="empty"><h3 style="font-size:1.5rem;color:var(--tx)">${t('emptyCart')}</h3><p style="margin:8px 0 22px">${t('emptyS')}</p><a class="btn btn-p" href="#/menu" data-act="closeAll">${t('explore')}</a></div>`}
+function refreshDrawer(){const ls=cartLines();$('#drawer').innerHTML=`<div class="dr-h"><h3>${t('cartT')}</h3><button class="ib" data-act="closeAll" aria-label="${t('close')}">✕</button></div>
+ <div class="dr-b">${ls.length?linesHTML():emptyCartHTML()}</div>${ls.length?`<div class="dr-f">${couponHTML()}${totalsHTML('delivery')}<div style="display:grid;gap:10px;margin-top:14px"><a class="btn btn-p" href="#/checkout" data-act="closeAll">${t('checkout')}</a><a class="btn btn-o" href="#/cart" data-act="closeAll">${t('cartT')}</a></div></div>`:''}`}
+function refreshChrome(){$('#hdr').innerHTML=hdrHTML();$('#ftr').innerHTML=ftrHTML();refreshDrawer();lastBump=false;if(curRoute()[0]==='cart'||curRoute()[0]==='checkout')refreshPageIfCart()}
+let _rp=false;function refreshPageIfCart(){if(_rp)return;const r=curRoute()[0];if(r==='cart'||r==='checkout'){_rp=true;render(true);_rp=false}}
+function openModal(fn){MODALFN=fn;$('#modal').innerHTML=`<div class="mbox ${MODALFN.wide?'wide':''}">${fn()}</div>`;document.body.classList.add('modal-open');$('#modal').addEventListener('click',modalBg)}
+function modalBg(e){if(e.target.id==='modal')closeAll()}
+function refreshModal(){if(MODALFN&&document.body.classList.contains('modal-open'))$('#modal').innerHTML=`<div class="mbox ${MODALFN.wide?'wide':''}">${MODALFN()}</div>`}
+function closeAll(){document.body.classList.remove('drawer-open','modal-open','lock');MODALFN=null;EDIT=null}
+
+/* ---------- 9. CUSTOMER PAGES ---------- */
+function pHome(){const s=S.settings,hrs=s.hours.map(h=>`<li><span>${esc(L(h[0],h[1]))}</span><b>${esc(h[2])}</b></li>`).join('');
+ const catT=S.cats.slice(0,8).map(c=>{const f=S.products.find(p=>p.cat===c.id);return f?`<a class="cat-tile rv" href="#/menu" data-act="gocat" data-id="${esc(c.id)}">${img(f)}<span>${esc(L(c.en,c.bn))}</span></a>`:''}).join('');
+ const offers=S.coupons.slice(0,2).map(c=>`<div class="offer rv"><h3>${esc(L(c.en,c.bn))}</h3><p class="mu">${t('useCode')}</p><span class="code">${esc(c.code)}</span></div>`).join('')+`<div class="offer rv"><h3>${t('freeDel')}</h3><p class="mu">${t('freeDelS')} ${money(s.freeAbove)}</p><span class="code">${t('homeDel')}</span></div>`;
+ const revs=S.reviews.filter(r=>r.show).map(r=>`<div class="rev rv"><div class="st">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div><p>${esc(L(r.en,r.bn))}</p><small>${esc(r.name)}</small>${r.sample?`<span class="samp">${t('sample')}</span>`:''}</div>`).join('');
+ return `<section class="hero" style="background-image:url('${PH.hero}')"><div class="wrap"><div class="tag">${t('tagline')}</div>
+  <h1><span class="ln"><span>${t('h1a')}</span></span><span class="ln"><span><em>${t('h1b')}</em></span></span></h1><p class="lead">${t('heroP')}</p>
+  <div class="cta"><a class="btn btn-p" href="#/menu">${t('explore')}</a><a class="btn btn-o hero-o" href="#/menu" data-act="gocat" data-id="all">${t('orderNow')}</a></div></div><div class="scroll"></div></section>
+ <section class="sec"><div class="wrap"><div class="sec-top">${secHead('featured','featured','featuredS')}<a class="btn btn-o" href="#/menu">${t('viewAll')}</a></div><div class="grid g4">${cardsBy('feat',4)}</div></div></section>
+ <section class="sec alt"><div class="wrap">${secHead('best','best','bestS')}<div class="grid g4">${cardsBy('best',4)}</div></div></section>
+ <section class="sec"><div class="wrap">${secHead('chef','chef','chefS')}<div class="grid g4">${cardsBy('chef',4)}</div></div></section>
+ <section class="sec alt"><div class="wrap">${secHead('cats','cats','catsS')}<div class="grid g4">${catT}</div></div></section>
+ <section class="sec"><div class="wrap">${secHead('offers','offers','offersS')}<div class="grid g3">${offers}</div></div></section>
+ <section class="sec alt"><div class="wrap">${secHead('combos','combos','combosS')}<div class="grid g4">${S.products.filter(p=>p.cat==='combo').map(card).join('')}</div>
+  <div style="height:70px"></div>${secHead('family','family','familyS')}<div class="grid g4">${S.products.filter(p=>p.cat==='family').map(card).join('')}</div></div></section>
+ <section class="sec"><div class="wrap story"><div class="im rv">${img({img:PH.inn,en:'THE EMBER interior'})}</div><div class="rv"><div class="eyebrow">${t('story')}</div><h2 style="font-size:clamp(1.9rem,3.6vw,2.8rem)">${t('storyH')}</h2><p>${t('storyP1')}</p><p><small>${t('storyP2')}</small></p><a class="btn btn-o" style="margin-top:24px" href="#/about">${t('about')}</a></div></div></section>
+ <section class="sec alt"><div class="wrap">${secHead('why','why',null,1)}<div class="grid g4">${[1,2,3,4].map(n=>`<div class="why rv"><h3>${t('w'+n)}</h3><p>${t('w'+n+'p')}</p></div>`).join('')}</div></div></section>
+ <section class="sec"><div class="wrap">${secHead('reviews','reviews','reviewsS',1)}<div class="grid g3">${revs}</div></div></section>
+ <section class="sec alt"><div class="wrap"><div class="grid g3"><div class="infoCard rv"><h3>${t('dp')}</h3><ul><li><span>${t('homeDel')}</span><b>${money(s.deliveryFee)}</b></li><li><span>${t('freeDel')}</span><b>≥ ${money(s.freeAbove)}</b></li><li><span>${t('pickup')}</span><b>${t('free')}</b></li></ul></div>
+  <div class="infoCard rv"><h3>${t('hours')}</h3><ul>${hrs}</ul><p class="mu" style="font-size:.78rem;margin-top:10px">${t('hoursNote')}</p></div>
+  <div class="infoCard rv"><h3>${t('loc')}</h3><ul><li><span>${esc(L(s.address,s.addressBn))}</span></li><li><span>${esc(s.phone)}</span></li><li><span>${esc(s.email)}</span></li></ul><p class="mu" style="font-size:.78rem;margin-top:10px">${t('sampleDetails')}</p></div></div>
+  <div class="rv" style="margin-top:28px;text-align:center"><a class="btn btn-o" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.address)}">${t('openMap')}</a></div></div></section>
+ <section class="sec"><div class="wrap" style="text-align:center">${secHead('news','news','newsS',1)}<form class="news" data-form="news"><input type="email" name="email" placeholder="${t('emailPh')}" aria-label="${t('emailPh')}" required><button class="btn btn-p" type="submit">${t('subscribe')}</button></form></div></section>`}
+
+function filtered(){let a=S.products.filter(inMenu);if(UI.cat!=='all')a=a.filter(p=>p.cat===UI.cat);const q=UI.q.trim().toLowerCase();
+ if(q)a=a.filter(p=>[p.en,p.bn,p.de,p.db,cn(p.cat)].join(' ').toLowerCase().includes(q));
+ const s=UI.sort;a.sort(s==='low'?(x,y)=>x.price-y.price:s==='high'?(x,y)=>y.price-x.price:s==='name'?(x,y)=>x.en.localeCompare(y.en):(x,y)=>(y.pop||0)-(x.pop||0));return a}
+function gridHTML(){const a=filtered();return a.length?`<div class="grid g4">${a.map(card).join('')}</div>`:`<div class="empty"><p>${t('noRes')}</p><button class="link" data-act="clearF">${t('clear')}</button></div>`}
+function pMenu(){if(UI.cat!=='all'&&!cat(UI.cat))UI.cat='all';
+ return `<section class="pgh"><div class="wrap"><h1>${t('menuT')}</h1><p>${t('menuS')}</p></div></section><div class="wrap"><div class="tools">
+ <input type="search" id="q" data-ui="q" placeholder="${t('search')}" value="${esc(UI.q)}" aria-label="${t('search')}"><select data-ui="sort" aria-label="Sort">${[['pop','sortPop'],['low','sortLow'],['high','sortHigh'],['name','sortName']].map(o=>`<option value="${o[0]}" ${UI.sort===o[0]?'selected':''}>${t(o[1])}</option>`).join('')}</select></div>
+ <div class="tabs" id="tabs">${tabsHTML()}</div><div id="menuGrid" style="padding-bottom:90px">${gridHTML()}</div></div>`}
+const tabsHTML=()=>`<button class="tab ${UI.cat==='all'?'on':''}" data-act="cat" data-id="all">${t('all')}</button>`+S.cats.map(c=>`<button class="tab ${UI.cat===c.id?'on':''}" data-act="cat" data-id="${esc(c.id)}">${esc(L(c.en,c.bn))}</button>`).join('');
+
+function pFood(id){const it=prod(id);if(!it)return pNF();
+ if(!DET||DET.id!==id)DET={id,qty:1,size:0,spice:cfg(it).sp?1:0,ad:[],note:''};
+ return `<div class="wrap"><div class="det"><div class="im rv in">${img(it)}</div><div><div class="crumb"><a href="#/menu">${t('menu')}</a> / ${esc(cn(it.cat)||t('combos'))}</div>${badges(it).replace('class="badges"','class="badges" style="position:static;margin-bottom:8px"')}
+ <h1>${esc(it.en)}</h1><div class="bn">${esc(it.bn)}</div><p class="mu">${esc(ds(it))}</p><p style="margin-top:12px"><span class="pr" style="font-size:1.6rem">${money(it.price)}</span> <span class="mu" style="font-size:.84rem">· ${t('availL')}: ${it.av?`<span style="color:var(--ok)">${t('inStock')}</span>`:`<span style="color:var(--bad)">${t('unavail')}</span>`}</span></p>
+ <div data-optroot="det" data-pfx="d_">${optsHTML(it,DET,'d_')}<div class="buyrow"><div class="qty"><button data-act="dq" data-d="-1" aria-label="−">−</button><b class="qv">${num(DET.qty)}</b><button data-act="dq" data-d="1" aria-label="+">+</button></div>
+ <button class="btn btn-p" data-act="addDet" ${it.av?'':'disabled'}>${t('addCart')} · <span class="js-price">${money(unit(it,DET)*DET.qty)}</span></button></div></div>
+ <p style="margin-top:22px"><a class="link" href="#/menu">← ${t('backMenu')}</a></p></div></div></div>`}
+function pNF(){return `<div class="wrap"><div class="empty" style="padding:120px 0"><h1 style="color:var(--tx)">404</h1><p style="margin:10px 0 22px">${t('notFound')}</p><a class="btn btn-p" href="#/">${t('toHome')}</a></div></div>`}
+
+function pCart(){const ls=cartLines();
+ return `<section class="pgh"><div class="wrap"><h1>${t('cartT')}</h1></div></section><div class="wrap" style="padding-bottom:90px">${!ls.length?emptyCartHTML():`<div class="co"><div class="box"><h3>${t('items')}</h3>${linesHTML()}<p style="margin-top:20px"><a class="link" href="#/menu">← ${t('continue')}</a></p></div>
+ <div class="box sticky"><h3>${t('orderSum')}</h3>${couponHTML()}${totalsHTML('delivery')}<a class="btn btn-p" style="width:100%;margin-top:18px" href="#/checkout">${t('checkout')}</a></div></div>`}</div>`}
+
+function validateCK(){const e={};if(CK.name.trim().length<2)e.name='eName';if(!valid.phone(CK.phone))e.phone='ePhone';if(CK.email&&!valid.email(CK.email))e.email='eEmail';
+ if(CK.method==='delivery'){if(CK.address.trim().length<6)e.address='eAddr';if(CK.area.trim().length<2)e.area='eArea'}if(!cartLines().length)e.cart='eCart';return e}
+function pCheckout(){const ls=cartLines();if(!ls.length)return `<section class="pgh"><div class="wrap"><h1>${t('checkoutT')}</h1></div></section><div class="wrap">${emptyCartHTML()}</div>`;
+ const e=CK.errors,fld=(k,lb,type,ex)=>`<div class="f ${e[k]?'bad':''}"><label for="ck-${k}">${t(lb)}</label><input id="ck-${k}" data-ck="${k}" type="${type||'text'}" value="${esc(CK[k])}" ${ex||''}>${e[k]?`<div class="err" role="alert">${t(e[k])}</div>`:''}</div>`;
+ const opt=(grp,val,title,sub)=>`<label class="opt ${CK[grp]===val?'on':''}"><input type="radio" name="${grp}" data-ckr="${grp}" value="${val}" ${CK[grp]===val?'checked':''}><span>${title}${sub?`<small>${sub}</small>`:''}</span></label>`;
+ const summary=`<div class="box sticky"><h3>${t('orderSum')}</h3>${linesHTML().replace(/<div style="margin-top:6px">.*?<\/div>/gs,'').replace(/<div class="qty">.*?<\/div>/gs,'')}${totalsHTML()}${couponHTML()}</div>`;
+ let main;
+ if(CK.step===1){main=`<div class="demo">${t('demoBanner')}</div><div class="box"><h3>${t('custInfo')}</h3>${fld('name','fullName','text','autocomplete="name"')}<div class="row2">${fld('phone','mobile','tel','autocomplete="tel" placeholder="01XXXXXXXXX"')}${fld('email','emailOpt','email','autocomplete="email"')}</div></div>
+ <div class="box"><h3>${t('method')}</h3>${opt('method','delivery',t('homeDel'),`${t('fee')}: ${money(S.settings.deliveryFee)} · ${t('freeDel')} ≥ ${money(S.settings.freeAbove)}`)}${opt('method','pickup',t('pickup'),t('free'))}
+ ${CK.method==='delivery'?`<div style="margin-top:18px">${fld('address','address','text','autocomplete="street-address"')}<div class="row2"><div class="f"><label for="ck-city">${t('city')}</label><select id="ck-city" data-ck="city">${CITIES.map(c=>`<option value="${c[0]}" ${CK.city===c[0]?'selected':''}>${L(c[0],c[1])}</option>`).join('')}</select></div>${fld('area','area')}</div>
+ <div class="f"><label for="ck-note">${t('dnote')}</label><textarea id="ck-note" data-ck="note" rows="2">${esc(CK.note)}</textarea></div></div>`:''}</div>
+ <div class="box"><h3>${t('payM')}</h3>${['cod','bkash','nagad','card'].map(p=>opt('pay',p,t(p))).join('')}<p class="mu" style="font-size:.82rem;margin-top:6px">${t('payNote')}</p></div>
+ <button class="btn btn-p" data-act="ckNext" style="width:100%">${t('reviewOrder')}</button>`}
+ else{const cname=(CITIES.find(c=>c[0]===CK.city)||['',''])[lang==='bn'?1:0];main=`<div class="demo">${t('demoBanner')}</div><div class="box"><h3>${t('custInfo')}</h3><p>${esc(CK.name)}<br>${esc(CK.phone)}${CK.email?'<br>'+esc(CK.email):''}</p></div>
+ <div class="box"><h3>${t('method')}</h3><p>${CK.method==='delivery'?`${t('homeDel')}<br><span class="mu">${esc(CK.address)}, ${esc(CK.area)}, ${esc(cname)}</span>${CK.note?`<br><span class="mu">“${esc(CK.note)}”</span>`:''}`:t('pickup')}</p></div>
+ <div class="box"><h3>${t('payM')}</h3><p>${t(CK.pay)}</p><p class="mu" style="font-size:.82rem">${t('payNote')}</p></div>
+ <div style="display:flex;gap:12px"><button class="btn btn-o" data-act="ckBack">${t('back')}</button><button class="btn btn-p" data-act="place" style="flex:1">${t('place')}</button></div>`}
+ return `<section class="pgh"><div class="wrap"><h1>${t('checkoutT')}</h1></div></section><div class="wrap"><div class="co"><div><div class="steps"><span class="${CK.step===1?'on':''}">${t('step1')}</span><span class="${CK.step===2?'on':''}">${t('step2')}</span></div>${main}</div>${summary}</div></div>`}
+
+const findOrder=ref=>S.orders.find(o=>o.ref===ref);
+function pConfirm(ref){const o=findOrder(ref);if(!o)return pNF();const lg=lang,min=o.method==='delivery'?'35–50':'20–25';
+ return `<div class="wrap"><div class="ok-wrap"><svg class="check" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><path d="M30 52l14 14 27-30"/></svg><h1>${t('okT')}</h1><div class="demo" style="margin-top:16px">${t('okS')}</div>
+ <p class="mu">${t('ref')}</p><div class="ref">${esc(o.ref)}</div>
+ <div class="box"><h3>${t('orderSum')}</h3>${o.items.map(i=>`<div class="tot"><span>${num(i.qty)} × ${esc(L(i.en,i.bn))}${(lang==='bn'?i.optsBn:i.opts)?`<br><small class="mu">${esc(lang==='bn'?i.optsBn:i.opts)}</small>`:''}</span><span>${money(i.unit*i.qty)}</span></div>`).join('')}
+ <div class="tot"><span>${t('subtotal')}</span><span>${money(o.totals.sub)}</span></div>${o.totals.disc?`<div class="tot"><span>${t('discount')}</span><span>−${money(o.totals.disc)}</span></div>`:''}<div class="tot"><span>${t('delivery')}</span><span>${o.totals.del?money(o.totals.del):t('free')}</span></div><div class="tot g"><span>${t('total')}</span><span>${money(o.totals.total)}</span></div></div>
+ <div class="box"><h3>${t('cust')}</h3><p>${esc(o.customer.name)} · ${esc(o.customer.phone)}</p>${o.method==='delivery'?`<p class="mu">${esc(o.customer.address)}, ${esc(o.customer.area)}</p>`:''}<p style="margin-top:8px">${o.method==='delivery'?t('homeDel'):t('pickup')} · ${t(o.pay)}</p><p class="mu" style="margin-top:8px">${t('est')}: ${min} ${t('mins')}</p></div>
+ <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><a class="btn btn-p" href="#/track/${esc(o.ref)}">${t('trackOrder')}</a><a class="btn btn-o" href="#/">${t('toHome')}</a></div></div></div>`}
+
+function stageOf(o){return Math.min(5,Math.floor((Date.now()-o.ts)/20000))}
+function trackBody(o){const st=stageOf(o);return `<div class="trk">${ST.map((k,i)=>`<div class="${i<=st?'done':''} ${i===st&&st<5?'cur':''}"><span>${t(k)}</span></div>`).join('')}</div>`}
+function pTrack(ref){const o=ref?findOrder(ref):null;
+ return `<section class="pgh"><div class="wrap"><h1>${t('track')}</h1></div></section><div class="wrap" style="max-width:640px;padding:40px 24px 90px"><div class="demo">${t('trackS')}</div>
+ <form data-form="track" style="display:flex;gap:10px;margin-bottom:24px"><input name="ref" style="flex:1;background:var(--card);border:1px solid var(--ln);padding:12px 14px" value="${esc(ref||'')}" placeholder="${t('trackPh')}" aria-label="${t('ref')}"><button class="btn btn-p" type="submit">${t('trackGo')}</button></form>
+ ${ref?(o?`<div class="box"><p class="mu">${t('ref')}</p><div class="ref" style="margin:6px 0 0">${esc(o.ref)}</div><div id="trkBody">${trackBody(o)}</div></div>`:`<p class="empty">${t('noOrder')}</p>`):''}</div>`}
+
+function pLogin(){return `<div class="wrap"><div class="auth"><h1>${t('login')}</h1><div class="demo" style="margin:14px 0">${t('authNote')}</div><form data-form="login" novalidate>${aField('email','emailL','email')}${aField('pass','pass','password')}<button class="btn btn-p" style="width:100%" type="submit">${t('login')}</button></form>
+ <p style="margin-top:18px;font-size:.9rem"><a class="link" href="#/forgot">${t('forgot')}</a> · <a class="link" href="#/register">${t('register')}</a></p></div></div>`}
+const aField=(n,lb,type,ac)=>`<div class="f" data-f="${n}"><label>${t(lb)}</label><input name="${n}" type="${type||'text'}" ${ac?`autocomplete="${ac}"`:''}><div class="err" role="alert"></div></div>`;
+function pRegister(){return `<div class="wrap"><div class="auth"><h1>${t('register')}</h1><div class="demo" style="margin:14px 0">${t('authNote')}</div><form data-form="register" novalidate>${aField('name','fullName','text','name')}${aField('phone','mobile','tel','tel')}${aField('email','emailL','email','email')}${aField('pass','pass','password','new-password')}${aField('pass2','pass2','password','new-password')}<button class="btn btn-p" style="width:100%" type="submit">${t('register')}</button></form>
+ <p style="margin-top:18px;font-size:.9rem"><a class="link" href="#/login">${t('login')}</a></p></div></div>`}
+function pForgot(){return `<div class="wrap"><div class="auth"><h1>${t('forgotT')}</h1><p class="mu" style="margin:10px 0 20px">${t('forgotS')}</p><form data-form="forgot" novalidate>${aField('email','emailL','email')}<button class="btn btn-p" style="width:100%" type="submit">${t('sendLink')}</button></form><p style="margin-top:18px"><a class="link" href="#/login">← ${t('login')}</a></p></div></div>`}
+function pProfile(){const u=S.user;if(!u)return `<div class="wrap"><div class="auth"><p>${t('needLogin')}</p><a class="btn btn-p" style="margin-top:16px" href="#/login">${t('login')}</a></div></div>`;
+ let body;if(PTAB==='details')body=`<div class="box"><h3>${esc(u.name)}</h3><p class="mu">${esc(u.email||'')}${u.phone?' · '+esc(u.phone):''}</p><div class="demo" style="margin-top:16px">${t('authNote')}</div><button class="btn btn-o" data-act="logout">${t('logout')}</button></div>`;
+ else if(PTAB==='orders')body=S.orders.length?S.orders.map(o=>`<div class="box"><div class="tot"><b>${esc(o.ref)}</b><span>${new Date(o.ts).toLocaleString(lang==='bn'?'bn-BD':'en-GB')}</span></div><p class="mu">${o.items.map(i=>num(i.qty)+'× '+esc(L(i.en,i.bn))).join(', ')}</p><div class="tot g"><span>${t('total')}</span><span>${money(o.totals.total)}</span></div><a class="link" href="#/track/${esc(o.ref)}">${t('trackOrder')}</a></div>`).join(''):`<p class="empty">${t('noOrders')}</p>`;
+ else body=`<div class="box"><form data-form="addr" style="display:grid;grid-template-columns:1fr 2fr auto;gap:10px;align-items:start"><input name="label" placeholder="${t('label')}" required style="background:var(--bg);border:1px solid var(--ln);padding:11px"><input name="addr" placeholder="${t('address')}" required style="background:var(--bg);border:1px solid var(--ln);padding:11px"><button class="btn btn-p sm" type="submit">${t('addAddr')}</button></form></div>${S.addrs.length?S.addrs.map((a,i)=>`<div class="box"><div class="tot"><b>${esc(a.label)}</b><span><button class="link" data-act="useAddr" data-i="${i}">${t('useAddr')}</button> · <button class="link" data-act="delAddr" data-i="${i}">${t('remove')}</button></span></div><p class="mu">${esc(a.addr)}</p></div>`).join(''):`<p class="empty">${t('noAddr')}</p>`}`;
+ return `<section class="pgh"><div class="wrap"><h1>${t('profile')}</h1><p>${t('hello')}, ${esc(u.name)}</p></div></section><div class="wrap" style="max-width:820px;padding-bottom:90px"><div class="ptabs">${[['details','details'],['orders','history'],['addrs','addrs']].map(x=>`<button class="tab ${PTAB===x[0]?'on':''}" data-act="ptab" data-id="${x[0]}">${t(x[1])}</button>`).join('')}</div>${body}</div>`}
+
+function pAbout(){return `<section class="pgh"><div class="wrap"><h1>${t('aboutT')}</h1><p>${t('aboutS')}</p></div></section><div class="wrap"><div class="sec story"><div class="im rv in">${img({img:PH.inn,en:'THE EMBER'})}</div><div class="rv in"><div class="eyebrow">${t('story')}</div><h2 style="font-size:2.2rem">${t('storyH')}</h2><p>${t('storyP1')}</p><p><small>${t('storyP2')}</small></p></div></div>
+ <div class="grid g4" style="padding-bottom:90px">${[1,2,3,4].map(n=>`<div class="why rv"><h3>${t('w'+n)}</h3><p>${t('w'+n+'p')}</p></div>`).join('')}</div></div>`}
+function pContact(){const s=S.settings;return `<section class="pgh"><div class="wrap"><h1>${t('contactT')}</h1><p>${t('contactS')}</p></div></section><div class="wrap"><div class="co"><div class="box"><form data-form="contact" novalidate>${aField('name','fullName')}${aField('email','emailL','email')}<div class="f" data-f="msg"><label>${t('msg')}</label><textarea name="msg" rows="5"></textarea><div class="err"></div></div><button class="btn btn-p" type="submit">${t('send')}</button></form></div>
+ <div class="box"><h3>${t('visit')}</h3><p><b>${t('addrL')}</b><br>${esc(L(s.address,s.addressBn))}</p><p style="margin-top:12px"><b>${t('phoneL')}</b><br>${esc(s.phone)}</p><p style="margin-top:12px"><b>${t('emailL')}</b><br>${esc(s.email)}</p><p class="mu" style="margin-top:14px;font-size:.8rem">${t('sampleDetails')}</p></div></div></div>`}
+function pFaq(){return `<section class="pgh"><div class="wrap"><h1>${t('faqT')}</h1></div></section><div class="wrap faq" style="max-width:820px;padding:30px 24px 90px">${FAQ.map(f=>`<details><summary>${esc(L(f[0],f[1]))}</summary><p>${esc(L(f[2],f[3]))}</p></details>`).join('')}</div>`}
+function pPolicy(k){const tt={privacy:'privacy',terms:'terms',refund:'refund',delivery:'deliveryP'}[k];return `<section class="pgh"><div class="wrap"><h1>${t(tt)}</h1></div></section><div class="wrap"><div class="prose"><div class="demo">${t('polNote')}</div>${POL[k].map(s=>`<h2>${esc(L(s[0],s[1]))}</h2><p>${esc(L(s[2],s[3]))}</p>`).join('')}</div></div>`}
+
+/* ---------- 10. ADMIN DASHBOARD (frontend prototype) ---------- */
+const ADM={oq:'',ost:'all'};
+const SAMPLE_ORDERS=[['EMB-S-1012','Sample Customer A',3,1240,5,0],['EMB-S-1011','Sample Customer B',2,780,4,0],['EMB-S-1010','Sample Customer C',5,2150,2,1],['EMB-S-1009','Sample Customer D',1,320,5,1],['EMB-S-1008','Sample Customer E',4,1680,5,2],['EMB-S-1007','Sample Customer F',2,640,1,2],['EMB-S-1006','Sample Customer A',6,2890,5,3],['EMB-S-1005','Sample Customer G',2,560,0,3],['EMB-S-1004','Sample Customer B',3,1120,5,4],['EMB-S-1003','Sample Customer H',1,260,5,5],['EMB-S-1002','Sample Customer C',4,1790,5,5],['EMB-S-1001','Sample Customer D',2,830,5,6]];
+const SAMPLE_REV=[8200,9400,7600,11200,12800,15400,10300];
+function allOrders(){
+ const loc=S.orders.map(o=>({ref:o.ref,name:o.customer.name,n:o.items.reduce((s,i)=>s+i.qty,0),total:o.totals.total,st:S.ost[o.ref]!=null?S.ost[o.ref]:stageOf(o),ts:o.ts,sample:false,o}));
+ const smp=SAMPLE_ORDERS.map(a=>({ref:a[0],name:a[1],n:a[2],total:a[3],st:S.ost[a[0]]!=null?S.ost[a[0]]:a[4],ts:Date.now()-a[5]*864e5,sample:true}));
+ return loc.concat(smp).sort((a,b)=>b.ts-a.ts)}
+const sTag=s=>s?`<span class="sampleTag">${t('sample')}</span>`:'';
+const dt=ts=>new Date(ts).toLocaleDateString(lang==='bn'?'bn-BD':'en-GB',{day:'numeric',month:'short'});
+const stSel=o=>`<select data-adm="ost" data-ref="${esc(o.ref)}" aria-label="${t('status')}">${ST.map((k,i)=>`<option value="${i}" ${o.st===i?'selected':''}>${t(k)}</option>`).join('')}</select>`;
+const tbl=(heads,rows)=>`<div class="tw"><table><thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
+function ordersRows(list){return list.map(o=>`<tr><td><b>${esc(o.ref)}</b>${sTag(o.sample)}</td><td>${esc(o.name)}</td><td>${num(o.n)}</td><td>${money(o.total)}</td><td>${stSel(o)}</td><td>${dt(o.ts)}</td><td><button class="link" data-act="ordView" data-ref="${esc(o.ref)}">${t('view')}</button></td></tr>`).join('')||`<tr><td colspan="7" class="mu">${t('noRes')}</td></tr>`}
+function ordersList(){const q=ADM.oq.trim().toLowerCase();return allOrders().filter(o=>(ADM.ost==='all'||String(o.st)===ADM.ost)&&(!q||(o.ref+' '+o.name).toLowerCase().includes(q)))}
+function tf(n,lb,v,type){return `<div class="f" data-f="${n}"><label>${t(lb)}</label><input name="${n}" type="${type||'text'}" value="${esc(v)}" ${type==='number'?'min="0" step="1"':''}><div class="err" role="alert"></div></div>`}
+function taf(n,lb,v){return `<div class="f" data-f="${n}"><label>${t(lb)}</label><textarea name="${n}" rows="2">${esc(v)}</textarea><div class="err"></div></div>`}
+function prodForm(p){const isNew=!p;p=p||{id:'',cat:S.cats[0]?S.cats[0].id:'',en:'',bn:'',de:'',db:'',price:0,img:'',tags:[],av:true};
+ const f=()=>`<button class="ib mx" data-act="closeAll" aria-label="${t('close')}">✕</button><h3>${isNew?t('addProd'):t('editProd')}</h3><form data-form="prod" data-id="${esc(p.id)}" novalidate><div class="row2">${tf('en','nameEn',p.en)}${tf('bn','nameBn',p.bn)}</div>${taf('de','descEn',p.de)}${taf('db','descBn',p.db)}
+ <div class="row2">${tf('price','price',p.price,'number')}<div class="f"><label>${t('cat')}</label><select name="cat">${S.cats.map(c=>`<option value="${esc(c.id)}" ${c.id===p.cat?'selected':''}>${esc(L(c.en,c.bn))}</option>`).join('')}<option value="combo" ${p.cat==='combo'?'selected':''}>${t('combos')}</option><option value="family" ${p.cat==='family'?'selected':''}>${t('family')}</option></select></div></div>
+ ${tf('img','imgUrl',p.img&&p.img.startsWith('data:')?'':p.img)}<div class="chips" style="margin-bottom:18px"><label class="chip"><input type="checkbox" name="av" ${p.av?'checked':''}><span>${t('avail')}</span></label>${[['feat','fFeat'],['best','fBest'],['chef','fChef']].map(x=>`<label class="chip"><input type="checkbox" name="tag_${x[0]}" ${p.tags.includes(x[0])?'checked':''}><span>${t(x[1])}</span></label>`).join('')}</div><button class="btn btn-p" type="submit">${t('save')}</button></form>`;f.wide=true;return f}
+function catForm(c){const f=()=>`<button class="ib mx" data-act="closeAll">✕</button><h3>${c?t('editCat'):t('addCat')}</h3><form data-form="cat" data-id="${c?esc(c.id):''}" novalidate>${tf('en','nameEn',c?c.en:'')}${tf('bn','nameBn',c?c.bn:'')}<button class="btn btn-p" type="submit">${t('save')}</button></form>`;return f}
+function ordModal(ref){const a=allOrders().find(o=>o.ref===ref);if(!a)return()=>'';
+ return()=>{const o=a.o;return `<button class="ib mx" data-act="closeAll">✕</button><h3>${esc(a.ref)}${sTag(a.sample)}</h3><p class="mu">${esc(a.name)} · ${dt(a.ts)} · ${t(ST[a.st])}</p>${o?`<div style="margin:16px 0">${o.items.map(i=>`<div class="tot"><span>${num(i.qty)} × ${esc(L(i.en,i.bn))}</span><span>${money(i.unit*i.qty)}</span></div>`).join('')}<div class="tot g"><span>${t('total')}</span><span>${money(o.totals.total)}</span></div></div><p class="mu">${esc(o.customer.phone)} · ${o.method==='delivery'?esc(o.customer.address+', '+o.customer.area):t('pickup')} · ${t(o.pay)}</p>`:`<p style="margin-top:14px">${t('total')}: <b>${money(a.total)}</b> · ${num(a.n)} ${t('items')}</p><p class="mu" style="margin-top:8px">${t('sample')}</p>`}`}}
+function pAdmin(sub){sub=sub||'overview';
+ const tabs=[['overview','aOverview'],['orders','aOrders'],['products','aProducts'],['categories','aCats'],['customers','aCust'],['promos','aPromo'],['reviews','aRev'],['settings','aSet']];
+ if(!tabs.some(x=>x[0]===sub))sub='overview';let body='';
+ if(sub==='overview'){const ao=allOrders(),rev=ao.reduce((s,o)=>s+o.total,0),max=Math.max(...SAMPLE_REV),loc=new Date();
+  body=`<div class="stats"><div class="stat"><small>${t('totOrders')}</small><b>${num(ao.length)}</b></div><div class="stat"><small>${t('revenue')}</small><b>${money(rev)}</b></div><div class="stat"><small>${t('avgOrder')}</small><b>${money(rev/Math.max(1,ao.length))}</b></div><div class="stat"><small>${t('prodCount')}</small><b>${num(S.products.length)}</b></div></div>
+  <p class="mu" style="font-size:.8rem">${t('sample')}: ${t('totOrders')}, ${t('revenue')}, ${t('avgOrder')} (${ao.filter(o=>o.sample).length} ${t('sample')})</p>
+  <h3 style="margin:22px 0 10px">${t('revChart')}${sTag(1)}</h3><div class="bars">${SAMPLE_REV.map((v,i)=>{const d=new Date(loc.getTime()-(6-i)*864e5);return `<div title="${money(v)}"><i style="height:${v/max*100}%"></i><span>${d.toLocaleDateString(lang==='bn'?'bn-BD':'en-US',{weekday:'short'})}</span></div>`}).join('')}</div>
+  <h3 style="margin:28px 0 4px">${t('recent')}</h3>${tbl([t('ref'),t('cust'),t('items'),t('total'),t('status'),t('date'),''],ordersRows(ao.slice(0,5)))}
+  <h3 style="margin:28px 0 4px">${t('popular')}${sTag(1)}</h3>${tbl([t('name'),t('cat'),t('price')],[...S.products].sort((a,b)=>(b.pop||0)-(a.pop||0)).slice(0,5).map(p=>`<tr><td>${img(p)}${esc(nm(p))}</td><td>${esc(cn(p.cat)||'—')}</td><td>${money(p.price)}</td></tr>`).join(''))}`}
+ else if(sub==='orders')body=`<div class="adm-bar"><input type="search" data-adm="oq" placeholder="${t('search')}" value="${esc(ADM.oq)}"><select data-adm="ofil"><option value="all">${t('allSt')}</option>${ST.map((k,i)=>`<option value="${i}" ${ADM.ost===String(i)?'selected':''}>${t(k)}</option>`).join('')}</select></div><div id="admOrders">${tbl([t('ref'),t('cust'),t('items'),t('total'),t('status'),t('date'),''],ordersRows(ordersList()))}</div>`;
+ else if(sub==='products')body=`<div class="adm-bar"><button class="btn btn-p sm" data-act="addProd">+ ${t('addProd')}</button></div>${tbl([t('name'),t('cat'),t('price'),t('avail'),t('actions')],S.products.map(p=>`<tr><td>${img(p)}${esc(p.en)}<br><small class="mu" style="margin-left:52px">${esc(p.bn)}</small></td><td>${esc(cn(p.cat)||(p.cat==='combo'?t('combos'):p.cat==='family'?t('family'):'—'))}</td><td><input type="number" min="0" data-adm="price" data-id="${esc(p.id)}" value="${p.price}"></td><td><label class="chip"><input type="checkbox" data-adm="av" data-id="${esc(p.id)}" ${p.av?'checked':''}><span>${p.av?t('avail'):t('unavail')}</span></label></td><td><button class="link" data-act="editProd" data-id="${esc(p.id)}">${t('edit')}</button> · <button class="link" data-act="delProd" data-id="${esc(p.id)}">${t('del')}</button></td></tr>`).join(''))}`;
+ else if(sub==='categories')body=`<div class="adm-bar"><button class="btn btn-p sm" data-act="addCat">+ ${t('addCat')}</button></div>${tbl([t('nameEn'),t('nameBn'),t('prodCount'),t('actions')],S.cats.map(c=>`<tr><td>${esc(c.en)}</td><td>${esc(c.bn)}</td><td>${S.products.filter(p=>p.cat===c.id).length}</td><td><button class="link" data-act="editCat" data-id="${esc(c.id)}">${t('edit')}</button> · <button class="link" data-act="delCat" data-id="${esc(c.id)}">${t('del')}</button></td></tr>`).join(''))}`;
+ else if(sub==='customers'){const m={};allOrders().forEach(o=>{const c=m[o.name]||(m[o.name]={name:o.name,n:0,sp:0,sample:o.sample});c.n++;c.sp+=o.total;if(!o.sample)c.sample=false});
+  body=tbl([t('name'),t('orders'),t('spent')],Object.values(m).map(c=>`<tr><td>${esc(c.name)}${sTag(c.sample)}</td><td>${num(c.n)}</td><td>${money(c.sp)}</td></tr>`).join(''))}
+ else if(sub==='promos')body=`<h3 style="margin-top:20px">${t('coupons')}</h3>${tbl([t('code'),t('type'),t('value'),t('minOrder'),t('actions')],S.coupons.map((c,i)=>`<tr><td><b>${esc(c.code)}</b></td><td>${c.type==='pct'?t('pct'):t('flat')}</td><td>${c.type==='pct'?num(c.v)+'%':money(c.v)}</td><td>${money(c.min)}</td><td><button class="link" data-act="delCoupon" data-i="${i}">${t('del')}</button></td></tr>`).join(''))}
+  <div class="box"><h3>${t('addCoupon')}</h3><form data-form="couponAdd" novalidate><div class="row2">${tf('code','code','')}<div class="f"><label>${t('type')}</label><select name="type"><option value="pct">${t('pct')}</option><option value="flat">${t('flat')}</option></select></div></div><div class="row2">${tf('v','value','10','number')}${tf('min','minOrder','0','number')}</div><button class="btn btn-p sm" type="submit">${t('addCoupon')}</button></form></div>`;
+ else if(sub==='reviews')body=`<p class="mu" style="margin:14px 0">${t('reviewsS')}</p>`+tbl([t('name'),t('msg'),'★',t('status'),t('actions')],S.reviews.map((r,i)=>`<tr><td>${esc(r.name)}${sTag(r.sample)}</td><td style="white-space:normal;min-width:240px">${esc(L(r.en,r.bn))}</td><td>${r.stars}</td><td><span class="pill ${r.show?'ok':'no'}">${r.show?t('visible'):t('hidden')}</span></td><td><button class="link" data-act="togRev" data-i="${i}">${r.show?t('hide'):t('approve')}</button> · <button class="link" data-act="delRev" data-i="${i}">${t('del')}</button></td></tr>`).join(''));
+ else{const s=S.settings;body=`<div class="box" style="max-width:720px;margin-top:20px"><form data-form="settings" novalidate>${tf('name','rName',s.name)}${tf('address','rAddr',s.address)}${tf('addressBn','rAddrBn',s.addressBn)}<div class="row2">${tf('phone','rPhone',s.phone)}${tf('email','rEmail',s.email)}</div>
+  <div class="f"><label>${t('rHours')} (EN | বাংলা | time)</label><textarea name="hours" rows="3">${esc(s.hours.map(h=>h.join(' | ')).join('\n'))}</textarea></div><div class="row2">${tf('deliveryFee','rFee',s.deliveryFee,'number')}${tf('freeAbove','rFree',s.freeAbove,'number')}</div>${tf('logoUrl','rLogo',s.logoUrl)}
+  <div class="row2">${tf('facebook','Facebook',s.social.facebook)}${tf('instagram','Instagram',s.social.instagram)}</div>${tf('youtube','YouTube',s.social.youtube)}<button class="btn btn-p" type="submit">${t('setSave')}</button></form></div><p style="margin-top:20px"><button class="btn btn-o sm" data-act="resetData">${t('resetData')}</button></p>`}
+ return `<div class="adm"><aside class="adm-s">${logo()}${tabs.map(x=>`<a class="it ${sub===x[0]?'on':''}" href="#/admin/${x[0]}">${t(x[1])}</a>`).join('')}<a class="it" href="#/">${t('exitAdmin')}</a>
+  <div style="display:flex;gap:8px;padding:14px"><div class="lang"><button data-act="lang" data-l="en" class="${lang==='en'?'on':''}">EN</button><button data-act="lang" data-l="bn" class="${lang==='bn'?'on':''}">বাংলা</button></div><button class="ib theme-ic" data-act="theme" aria-label="${t('theme')}">${ic.theme}</button></div></aside>
+  <main class="adm-m"><h1>${t('admin')} · ${t(tabs.find(x=>x[0]===sub)[1])}</h1><div class="demo" style="margin-top:12px">${t('aNote')}</div>${body}</main></div>`}
+
+/* ---------- 11. FORMS ---------- */
+function vForm(f,rules){let ok=true;$$('.f',f).forEach(x=>{x.classList.remove('bad');const e=$('.err',x);if(e)e.textContent=''});
+ for(const[n,fn,k]of rules){const el=f.elements[n];if(!el)continue;if(!fn(el.value)){ok=false;const w=el.closest('.f');if(w){w.classList.add('bad');const e=$('.err',w);if(e)e.textContent=t(k)}}}return ok}
+const req=v=>String(v).trim().length>0,nn=v=>v!==''&&!isNaN(+v)&&+v>=0;
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'item';
+const FORMS={
+ coupon(f){const c=f.elements.code.value.trim();if(!c){S.coupon=null;store.set('coupon',null);refreshChrome();return}applyCoupon(c)},
+ news(f){if(!valid.email(f.elements.email.value.trim()))return toast(t('eEmail'));toast(t('newsOk'));f.reset()},
+ track(f){const r=f.elements.ref.value.trim().toUpperCase();location.hash='#/track/'+encodeURIComponent(r)},
+ login(f){if(!vForm(f,[['email',valid.email,'eEmail'],['pass',v=>v.length>=6,'ePass']]))return;const em=f.elements.email.value.trim();
+  if(!S.user||S.user.email!==em)S.user={name:em.split('@')[0],email:em,phone:(S.user&&S.user.phone)||''};store.set('user',S.user);CK.name=CK.name||S.user.name;CK.email=em;toast(t('loggedIn'));location.hash='#/profile'},
+ register(f){if(!vForm(f,[['name',v=>v.trim().length>1,'eName'],['phone',valid.phone,'ePhone'],['email',valid.email,'eEmail'],['pass',v=>v.length>=6,'ePass'],['pass2',v=>v===f.elements.pass.value,'ePass2']]))return;
+  S.user={name:f.elements.name.value.trim(),phone:f.elements.phone.value.trim(),email:f.elements.email.value.trim()};store.set('user',S.user);CK.name=S.user.name;CK.phone=S.user.phone;CK.email=S.user.email;toast(t('loggedIn'));location.hash='#/profile'},
+ forgot(f){if(!vForm(f,[['email',valid.email,'eEmail']]))return;toast(t('forgotOk'));f.reset()},
+ contact(f){if(!vForm(f,[['name',v=>v.trim().length>1,'eName'],['email',valid.email,'eEmail'],['msg',req,'eReq']]))return;toast(t('sentOk'));f.reset()},
+ addr(f){const l=f.elements.label.value.trim(),a=f.elements.addr.value.trim();if(!l||!a)return;S.addrs.push({label:l,addr:a});store.set('addrs',S.addrs);render(true)},
+ prod(f){if(!vForm(f,[['en',req,'eReq'],['bn',req,'eReq'],['price',nn,'eReq']]))return;const id=f.dataset.id,e=f.elements;
+  const o={en:e.en.value.trim(),bn:e.bn.value.trim(),de:e.de.value.trim(),db:e.db.value.trim(),price:Math.round(+e.price.value),cat:e.cat.value,av:e.av.checked,tags:['feat','best','chef'].filter(k=>e['tag_'+k].checked)};
+  const im=e.img.value.trim();
+  if(id){const p=prod(id);Object.assign(p,o);if(im)p.img=im}else{S.products.push({id:slug(o.en)+'-'+Math.random().toString(36).slice(2,5),pop:50,img:im||ph(o.en),...o})}
+  store.set('products',S.products);closeAll();render(true)},
+ cat(f){if(!vForm(f,[['en',req,'eReq'],['bn',req,'eReq']]))return;const id=f.dataset.id,en=f.elements.en.value.trim(),bn=f.elements.bn.value.trim();
+  if(id){const c=cat(id);c.en=en;c.bn=bn}else{let nid=slug(en);while(cat(nid))nid+='-'+Math.random().toString(36).slice(2,4);S.cats.push({id:nid,en,bn})}store.set('cats',S.cats);closeAll();render(true)},
+ couponAdd(f){if(!vForm(f,[['code',req,'eReq'],['v',nn,'eReq'],['min',nn,'eReq']]))return;const e=f.elements,code=e.code.value.trim().toUpperCase();if(S.coupons.some(c=>c.code===code))return toast(code+' ✕');
+  S.coupons.push({code,type:e.type.value,v:+e.v.value,min:+e.min.value,en:e.type.value==='pct'?e.v.value+'% off':'৳'+e.v.value+' off',bn:e.type.value==='pct'?e.v.value+'% ছাড়':e.v.value+' টাকা ছাড়'});store.set('coupons',S.coupons);render(true)},
+ settings(f){if(!vForm(f,[['name',req,'eReq'],['deliveryFee',nn,'eReq'],['freeAbove',nn,'eReq']]))return;const e=f.elements,s=S.settings;
+  Object.assign(s,{name:e.name.value.trim(),address:e.address.value.trim(),addressBn:e.addressBn.value.trim(),phone:e.phone.value.trim(),email:e.email.value.trim(),deliveryFee:+e.deliveryFee.value,freeAbove:+e.freeAbove.value,logoUrl:e.logoUrl.value.trim()});
+  s.social={facebook:e.facebook.value.trim()||'#',instagram:e.instagram.value.trim()||'#',youtube:e.youtube.value.trim()||'#'};
+  const hs=e.hours.value.split('\n').map(l=>l.split('|').map(x=>x.trim())).filter(a=>a.length>=3&&a[0]);if(hs.length)s.hours=hs.map(a=>[a[0],a[1]||a[0],a[2]]);
+  store.set('settings',s);toast(t('saved'));refreshChrome()}
+};
+document.addEventListener('submit',e=>{const f=e.target.closest('form[data-form]');if(!f)return;e.preventDefault();const fn=FORMS[f.dataset.form];if(fn)fn(f)});
+
+/* ---------- 12. ACTIONS ---------- */
+function placeOrder(){CK.errors=validateCK();if(CK.errors.cart||Object.keys(CK.errors).length){CK.step=1;render(true);return}
+ const ls=cartLines(),c=calc(),ref=mkRef();
+ const o={ref,ts:Date.now(),demo:true,items:ls.map(l=>{const it=prod(l.id);return{id:l.id,en:it.en,bn:it.bn,qty:l.qty,unit:unit(it,l),opts:optsText(it,l,'en'),optsBn:optsText(it,l,'bn')}}),
+  customer:{name:CK.name.trim(),phone:CK.phone.trim(),email:CK.email.trim(),address:CK.address.trim(),city:CK.city,area:CK.area.trim(),note:CK.note.trim()},method:CK.method,pay:CK.pay,totals:{sub:c.sub,disc:c.disc,del:c.del,total:c.total},coupon:c.disc?c.coupon.code:null};
+ S.orders.unshift(o);store.set('orders',S.orders);S.cart=[];S.coupon=null;store.set('coupon',null);store.set('cart',[]);CK.step=1;CK.errors={};CK.note='';lastBump=false;location.hash='#/confirm/'+ref}
+const editFn=()=>{if(!EDIT)return '';const it=prod(EDIT.id);return `<button class="ib mx" data-act="closeAll" aria-label="${t('close')}">✕</button><h3>${esc(nm(it))}</h3><div data-optroot="edit" data-pfx="e_">${optsHTML(it,EDIT,'e_')}<div class="buyrow"><div class="qty"><button data-act="dq" data-d="-1">−</button><b class="qv">${num(EDIT.qty)}</b><button data-act="dq" data-d="1">+</button></div><button class="btn btn-p" data-act="saveEdit">${t('save')} · <span class="js-price">${money(unit(it,EDIT)*EDIT.qty)}</span></button></div></div>`};
+const optSel=root=>root.dataset.optroot==='det'?DET:EDIT;
+function syncOpt(root){const sel=optSel(root);if(!sel)return;readOpts(root,sel,root.dataset.pfx);updPrice(root,sel)}
+const ACT={
+ lang(el){lang=el.dataset.l==='bn'?'bn':'en';try{localStorage.setItem('ember_lang',lang)}catch(e){}document.documentElement.lang=lang;render(true);refreshModal()},
+ theme(){const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ember_theme',n)}catch(e){}},
+ nav(){$('#hd').classList.toggle('open')},
+ cartOpen(){refreshDrawer();document.body.classList.add('drawer-open')},
+ closeAll,
+ quick(el){const it=prod(el.dataset.id);if(it&&addLine({id:it.id,qty:1})){el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),600);toast(t('added')+': '+nm(it),t('viewCart'),()=>ACT.cartOpen())}},
+ cat(el){UI.cat=el.dataset.id;$('#tabs').innerHTML=tabsHTML();$('#menuGrid').innerHTML=gridHTML();observe(true)},
+ gocat(el){UI.cat=el.dataset.id},
+ clearF(){UI.cat='all';UI.q='';UI.sort='pop';render(true)},
+ dq(el){const root=el.closest('[data-optroot]'),sel=optSel(root);sel.qty=Math.min(99,Math.max(1,sel.qty+(+el.dataset.d)));updPrice(root,sel)},
+ addDet(el){const root=el.closest('[data-optroot]');syncOpt(root);const it=prod(DET.id);if(addLine(DET)){el.classList.add('pulse');setTimeout(()=>el.classList.remove('pulse'),600);toast(t('added')+': '+nm(it),t('viewCart'),()=>ACT.cartOpen())}},
+ inc(el){const l=S.cart.find(x=>x.key===el.dataset.key);if(l){l.qty=Math.min(99,l.qty+1);saveCart()}},
+ dec(el){const l=S.cart.find(x=>x.key===el.dataset.key);if(l){l.qty--;if(l.qty<1)S.cart=S.cart.filter(x=>x!==l);saveCart()}},
+ rm(el){S.cart=S.cart.filter(x=>x.key!==el.dataset.key);saveCart()},
+ edit(el){const l=S.cart.find(x=>x.key===el.dataset.key);if(!l)return;EDIT={...l,ad:[...l.ad],oldKey:l.key};openModal(editFn)},
+ saveEdit(el){syncOpt(el.closest('[data-optroot]'));const o=EDIT;S.cart=S.cart.filter(x=>x.key!==o.oldKey);const it=prod(o.id);addLine({id:o.id,qty:o.qty,size:o.size,spice:o.spice,ad:o.ad,note:o.note});lastBump=false;closeAll();refreshChrome()},
+ ckNext(){CK.errors=validateCK();if(Object.keys(CK.errors).length){render(true);const b=$('.f.bad');if(b)b.scrollIntoView({block:'center'});return}CK.step=2;render(true);window.scrollTo(0,0)},
+ ckBack(){CK.step=1;render(true);window.scrollTo(0,0)},
+ place:placeOrder,
+ ptab(el){PTAB=el.dataset.id;render(true)},
+ logout(){S.user=null;store.del('user');render(true);refreshChrome()},
+ useAddr(el){CK.address=S.addrs[+el.dataset.i].addr;CK.method='delivery';CK.step=1;location.hash='#/checkout'},
+ delAddr(el){S.addrs.splice(+el.dataset.i,1);store.set('addrs',S.addrs);render(true)},
+ ordView(el){openModal(ordModal(el.dataset.ref))},
+ addProd(){openModal(prodForm())},editProd(el){openModal(prodForm(prod(el.dataset.id)))},
+ delProd(el){if(!confirm(t('confirmDel')))return;S.products=S.products.filter(p=>p.id!==el.dataset.id);S.cart=S.cart.filter(l=>l.id!==el.dataset.id);store.set('products',S.products);store.set('cart',S.cart);render(true);refreshChrome()},
+ addCat(){openModal(catForm())},editCat(el){openModal(catForm(cat(el.dataset.id)))},
+ delCat(el){if(S.products.some(p=>p.cat===el.dataset.id))return toast(t('catHasItems'));if(!confirm(t('confirmDel')))return;S.cats=S.cats.filter(c=>c.id!==el.dataset.id);store.set('cats',S.cats);render(true)},
+ delCoupon(el){S.coupons.splice(+el.dataset.i,1);store.set('coupons',S.coupons);render(true)},
+ togRev(el){const r=S.reviews[+el.dataset.i];r.show=!r.show;store.set('reviews',S.reviews);render(true)},
+ delRev(el){if(!confirm(t('confirmDel')))return;S.reviews.splice(+el.dataset.i,1);store.set('reviews',S.reviews);render(true)},
+ resetData(){if(!confirm(t('resetOk')))return;try{Object.keys(localStorage).filter(k=>k.startsWith('ember_')&&k!=='ember_theme'&&k!=='ember_lang').forEach(k=>localStorage.removeItem(k))}catch(e){}location.hash='#/';location.reload()}
+};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const fn=ACT[el.dataset.act];if(fn)fn(el,e)});
+document.addEventListener('input',e=>{const el=e.target;
+ if(el.dataset.ck){CK[el.dataset.ck]=el.value;if(CK.errors[el.dataset.ck]){delete CK.errors[el.dataset.ck];const w=el.closest('.f');if(w){w.classList.remove('bad');const er=$('.err',w);if(er)er.remove()}}}
+ else if(el.dataset.ui==='q'){UI.q=el.value;$('#menuGrid').innerHTML=gridHTML();observe(true)}
+ else if(el.dataset.adm==='oq'){ADM.oq=el.value;$('#admOrders').innerHTML=tbl([t('ref'),t('cust'),t('items'),t('total'),t('status'),t('date'),''],ordersRows(ordersList()))}
+ else{const root=el.closest('[data-optroot]');if(root&&el.matches('textarea'))syncOpt(root)}});
+document.addEventListener('change',e=>{const el=e.target,d=el.dataset;
+ if(d.ck)CK[d.ck]=el.value;
+ else if(d.ckr){CK[d.ckr]=el.value;render(true)}
+ else if(d.ui==='sort'){UI.sort=el.value;$('#menuGrid').innerHTML=gridHTML();observe(true)}
+ else if(d.adm==='ofil'){ADM.ost=el.value;$('#admOrders').innerHTML=tbl([t('ref'),t('cust'),t('items'),t('total'),t('status'),t('date'),''],ordersRows(ordersList()))}
+ else if(d.adm==='ost'){S.ost[d.ref]=+el.value;store.set('ost',S.ost)}
+ else if(d.adm==='price'){const p=prod(d.id);if(p&&nn(el.value)){p.price=Math.round(+el.value);store.set('products',S.products);toast(t('saved'))}}
+ else if(d.adm==='av'){const p=prod(d.id);if(p){p.av=el.checked;store.set('products',S.products);render(true)}}
+ else{const root=el.closest('[data-optroot]');if(root)syncOpt(root)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll()});
+document.addEventListener('click',e=>{if(document.body.classList.contains('drawer-open')||document.body.classList.contains('modal-open')){}});
+
+/* ---------- 13. ROUTER & START ---------- */
+const curRoute=()=>location.hash.replace(/^#\/?/,'').split('?')[0].split('/').map(s=>{try{return decodeURIComponent(s)}catch(e){return s}});
+let io;
+function observe(instant){const els=$$('.rv:not(.in)');if(instant||!('IntersectionObserver'in window)){els.forEach(x=>x.classList.add('in'));return}
+ if(io)io.disconnect();io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}}),{threshold:.1,rootMargin:'0px 0px -30px 0px'});els.forEach(x=>io.observe(x))}
+function chromeOnly(){$('#hdr').innerHTML=hdrHTML();$('#ftr').innerHTML=ftrHTML();refreshDrawer();lastBump=false}
+function render(keep){clearInterval(trackTimer);const r=curRoute(),seg=r[0]||'',y=window.scrollY;
+ document.body.classList.toggle('is-admin',seg==='admin');let h;
+ switch(seg){case '':h=pHome();break;case 'menu':h=pMenu();break;case 'food':h=pFood(r[1]);break;case 'cart':h=pCart();break;case 'checkout':h=pCheckout();break;case 'confirm':h=pConfirm(r[1]);break;case 'track':h=pTrack(r[1]);break;
+  case 'login':h=pLogin();break;case 'register':h=pRegister();break;case 'forgot':h=pForgot();break;case 'profile':h=pProfile();break;case 'about':h=pAbout();break;case 'contact':h=pContact();break;case 'faq':h=pFaq();break;
+  case 'privacy':case 'terms':case 'refund':case 'delivery':h=pPolicy(seg);break;case 'admin':h=pAdmin(r[1]);break;default:h=pNF()}
+ const app=$('#app');app.innerHTML=h;app.classList.remove('page-in');if(!keep){void app.offsetWidth;app.classList.add('page-in')}
+ chromeOnly();observe(!!keep);document.title=(seg==='admin'?'Admin · ':'')+'THE EMBER — '+t('tagline');
+ window.scrollTo(0,keep?y:0);
+ if(seg==='track'&&r[1]&&findOrder(r[1]))trackTimer=setInterval(()=>{const o=findOrder(r[1]),b=$('#trkBody');if(o&&b)b.innerHTML=trackBody(o)},5000)}
+window.addEventListener('hashchange',()=>{closeAll();render(false)});
+render(false);
+</script>
+</body>
+</html>
